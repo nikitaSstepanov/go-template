@@ -6,21 +6,21 @@ server:
 
 postgres:
     username: "admin"
-    host:     "localhost"
+    host:     "postgresql-postgresql-ha-pgpool.postgres.svc.cluster.local"
     port:     5432
     dbname:   "postgres"
     sslmode:  "disable"
 
 redis:
     user: "admin"
-    host: "redis"
+    host: "redis.redis.svc.cluster.local"
     port: 6379
     db:   1
 
 mail:
-    host:     ""
-    port:     0
-    username: ""
+    host:     "smtp.mail.ru"
+    port:     587
+    username: "intelligentmen@inbox.ru"
     identity: ""
 
 jwt:
@@ -28,10 +28,10 @@ jwt:
     audience: ["clients"]
 
 logger:
-    type:        "pretty"
-    level:       "debug"
+    type:        "default"
+    level:       "info"
     add_source:  true
     is_json:     true
     set_default: true
 
-mode: "DEBUG"
+mode: "RELEASE"

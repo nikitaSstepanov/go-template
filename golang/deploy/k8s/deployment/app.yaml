@@ -1,22 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: myapp
+  name: mainapp
 spec:
   selector:
     matchLabels:
-      app: myapp
+      app: mainapp
   template:
     metadata:
       labels:
-        app: myapp
+        app: mainapp
     spec:
       containers:
-      - name: myapp
-        image: <Image>
+      - name: mainapp
+        image: nikitasstepanov/app:v2beta
         resources:
           limits:
             memory: "128Mi"
             cpu: "500m"
+        env:
+          - name: CONFIG_PATH
+            value: config/k8s.yaml
         ports:
-        - containerPort: 0
+        - containerPort: 80

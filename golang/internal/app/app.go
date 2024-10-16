@@ -11,7 +11,7 @@ import (
 	"github.com/nikitaSstepanov/tools/client/pg"
 	rs "github.com/nikitaSstepanov/tools/client/redis"
 	server "github.com/nikitaSstepanov/tools/http_server"
-	"github.com/nikitaSstepanov/tools/log"
+	"github.com/nikitaSstepanov/tools/sl"
 	"github.com/nikitaSstepanov/tools/migrate"
 )
 
@@ -29,7 +29,7 @@ func New() *App {
 		panic(fmt.Errorf("can`t get application config. Error: %s", err.Error()))
 	}
 
-	logger := log.New(&cfg.Logger)
+	logger := sl.New(&cfg.Logger)
 
 	ctx := context.TODO()
 
@@ -77,5 +77,5 @@ func (a *App) Run() {
 }
 
 func (a *App) shutdown() error {
-	return a.server.Shutdown(a.logger)
+	return a.server.Shutdown(context.TODO())
 }

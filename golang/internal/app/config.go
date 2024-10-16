@@ -10,7 +10,7 @@ import (
 	"github.com/nikitaSstepanov/tools/client/pg"
 	"github.com/nikitaSstepanov/tools/client/redis"
 	server "github.com/nikitaSstepanov/tools/http_server"
-	"github.com/nikitaSstepanov/tools/log"
+	"github.com/nikitaSstepanov/tools/sl"
 )
 
 type appConfig struct {
@@ -19,7 +19,7 @@ type appConfig struct {
 	Redis    redis.Config    `yaml:"redis"`
 	Mail     mail.Config     `yaml:"mail"`
 	Jwt      auth.JwtOptions `yaml:"jwt"`
-	Logger   log.Config      `yaml:"logger"`
+	Logger   sl.Config       `yaml:"logger"`
 	Mode     string          `yaml:"mode" env:"MODE" env-default:"DEBUG"`
 }
 

@@ -42,7 +42,7 @@ services:
             context: ../../
             dockerfile: dockerfile
         environment:
-            CONFIG_PATH: "config/prod.yaml"
+            CONFIG_PATH: "config/docker.yaml"
         depends_on:
             postgres:
                 condition: service_healthy
