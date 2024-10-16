@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
 
@@ -13,14 +14,16 @@ import (
 )
 
 type Controller struct {
+	ctx     context.Context
 	account *account.Account
 	auth    *auth.Auth
 	mid     *middleware.Middleware
 	log     *slog.Logger
 }
 
-func New(uc *usecase.UseCase, logger *slog.Logger, jwtOpts *jwt.JwtOptions) *Controller {
+func New(ctx context.Context, uc *usecase.UseCase, logger *slog.Logger, jwtOpts *jwt.JwtOptions) *Controller {
 	return &Controller{
+		ctx:     ctx,
 		account: account.New(uc.Account),
 		auth:    auth.New(uc.Auth),
 		mid:     middleware.New(jwtOpts),
@@ -34,7 +37,7 @@ func (c *Controller) InitRoutes(mode string) *gin.Engine {
 	router := gin.New()
 
 	if gin.Mode() != gin.ReleaseMode {
-		router.Use(c.mid.InitLogger(c.log))
+		router.Use(c.mid.InitLogger(c.ctx))
 	}
 
 	router.GET("/ping", func(ctx *gin.Context) {

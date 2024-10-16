@@ -3,7 +3,6 @@ package app
 import (
 	"context"
 	"fmt"
-	"log/slog"
 
 	controller "github.com/nikitaSstepanov/templates/golang/internal/controller/http/v1"
 	"github.com/nikitaSstepanov/templates/golang/internal/usecase"
@@ -11,8 +10,8 @@ import (
 	"github.com/nikitaSstepanov/tools/client/pg"
 	rs "github.com/nikitaSstepanov/tools/client/redis"
 	server "github.com/nikitaSstepanov/tools/http_server"
-	"github.com/nikitaSstepanov/tools/sl"
 	"github.com/nikitaSstepanov/tools/migrate"
+	"github.com/nikitaSstepanov/tools/sl"
 )
 
 type App struct {
@@ -20,7 +19,7 @@ type App struct {
 	usecase    *usecase.UseCase
 	storage    *storage.Storage
 	server     *server.Server
-	logger     *slog.Logger
+	ctx        context.Context
 }
 
 func New() *App {
@@ -31,7 +30,7 @@ func New() *App {
 
 	logger := sl.New(&cfg.Logger)
 
-	ctx := context.TODO()
+	ctx := sl.ContextWithLogger(context.TODO(), logger)
 
 	pg, err := pg.ConnectToDb(ctx, &cfg.Postgres)
 	if err != nil {
@@ -55,15 +54,17 @@ func New() *App {
 
 	app := &App{}
 
-	app.logger = logger
+	app.ctx = ctx
 
 	app.storage = storage.New(pg, redis)
 
 	app.usecase = usecase.New(app.storage, &cfg.Jwt, &cfg.Mail)
 
-	app.controller = controller.New(app.usecase, logger, &cfg.Jwt)
+	app.controller = controller.New(ctx, app.usecase, logger, &cfg.Jwt)
 
+	logger.Debug("Try to get server")
 	handler := app.controller.InitRoutes(cfg.Mode)
+
 
 	app.server = server.New(handler, &cfg.Server)
 
@@ -72,10 +73,11 @@ func New() *App {
 
 func (a *App) Run() {
 	a.server.Start()
+	sl.L(a.ctx).Debug("Server start on port")
 
 	a.shutdown()
 }
 
 func (a *App) shutdown() error {
-	return a.server.Shutdown(context.TODO())
+	return a.server.Shutdown(a.ctx)
 }

@@ -1,8 +1,6 @@
 package validator
 
 import (
-	"fmt"
-
 	"github.com/go-playground/validator/v10"
 	e "github.com/nikitaSstepanov/tools/error"
 )
@@ -14,8 +12,8 @@ func Struct(s interface{}, args ...Arg) e.Error {
 	err := validate.Struct(s)
 	if err != nil {
 		errors := err.(validator.ValidationErrors)
-		msg := fmt.Sprintf("Incorrect data: %s", errors)
-		return e.New(msg, e.BadInput)
+
+		return e.New("Incorrect data", e.BadInput, errors)
 	}
 
 	return nil
