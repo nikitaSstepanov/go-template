@@ -12,8 +12,8 @@ type Token struct {
 	UserId uint64 `redis:"userId"`
 }
 
-func (t Token) MarshalBinary() ([]byte, error) {
-	return json.Marshal(&t)
+func (t *Token) MarshalBinary() ([]byte, error) {
+	return json.Marshal(t)
 }
 
 func (t *Token) UnmarshalBinary(data []byte) error {

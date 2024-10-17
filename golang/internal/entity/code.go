@@ -7,8 +7,8 @@ type ActivationCode struct {
 	UserId uint64 `redis:"userId"`
 }
 
-func (c ActivationCode) MarshalBinary() ([]byte, error) {
-	return json.Marshal(&c)
+func (c *ActivationCode) MarshalBinary() ([]byte, error) {
+	return json.Marshal(c)
 }
 
 func (c *ActivationCode) UnmarshalBinary(data []byte) error {

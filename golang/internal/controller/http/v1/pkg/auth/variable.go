@@ -35,12 +35,6 @@ type AuthUseCase interface {
 	Refresh(ctx context.Context, refresh string) (*entity.Tokens, e.Error)
 }
 
-type AuthHandler interface {
-	Login(ctx *gin.Context)
-	Logout(ctx *gin.Context)
-	Refresh(ctx *gin.Context)
-}
-
 type Middleware interface {
 	CheckAccess(roles ...string) gin.HandlerFunc
 }

@@ -9,11 +9,15 @@ import (
 	"github.com/nikitaSstepanov/tools/sl"
 )
 
+const CtxLoggerKey = "log"
+
 func (m *Middleware) InitLogger(ctx context.Context) gin.HandlerFunc {
 	log := sl.L(ctx)
 
 	log.Info("logger middleware enabled.")
 	return func(c *gin.Context) {
+		c.Set(CtxLoggerKey, log)
+
 		req := c.Request
 
 		c.Next()

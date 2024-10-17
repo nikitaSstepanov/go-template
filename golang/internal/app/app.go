@@ -9,6 +9,7 @@ import (
 	"github.com/nikitaSstepanov/templates/golang/internal/usecase/storage"
 	"github.com/nikitaSstepanov/tools/client/pg"
 	rs "github.com/nikitaSstepanov/tools/client/redis"
+	e "github.com/nikitaSstepanov/tools/error"
 	server "github.com/nikitaSstepanov/tools/http_server"
 	"github.com/nikitaSstepanov/tools/migrate"
 	"github.com/nikitaSstepanov/tools/sl"
@@ -60,11 +61,9 @@ func New() *App {
 
 	app.usecase = usecase.New(app.storage, &cfg.Jwt, &cfg.Mail)
 
-	app.controller = controller.New(ctx, app.usecase, logger, &cfg.Jwt)
+	app.controller = controller.New(ctx, app.usecase, &cfg.Jwt)
 
-	logger.Debug("Try to get server")
-	handler := app.controller.InitRoutes(cfg.Mode)
-
+	handler := app.controller.InitRoutes(ctx, cfg.Mode)
 
 	app.server = server.New(handler, &cfg.Server)
 
@@ -72,12 +71,29 @@ func New() *App {
 }
 
 func (a *App) Run() {
-	a.server.Start()
-	sl.L(a.ctx).Debug("Server start on port")
+	log := sl.L(a.ctx)
 
-	a.shutdown()
+	a.server.Start()
+
+	if err := a.shutdown(); err != nil {
+		log.Error("Failed to shutdown server", sl.ErrAttr(err))
+	}
+
+	log.Info("Application stopped successfully")
 }
 
 func (a *App) shutdown() error {
-	return a.server.Shutdown(a.ctx)
+	log := sl.L(a.ctx)
+
+	err := e.E(a.server.Shutdown(a.ctx))
+	if err != nil {
+		log.Error("Failed to stop http server", err.SlErr())
+	}
+
+	err = e.E(a.storage.Close())
+	if err != nil {
+		log.Error("Failed to close storage", err.SlErr())
+	}
+
+	return nil
 }

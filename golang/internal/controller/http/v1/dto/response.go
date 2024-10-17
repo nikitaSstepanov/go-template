@@ -2,6 +2,7 @@ package dto
 
 import (
 	"github.com/gin-gonic/gin"
+	cl "github.com/nikitaSstepanov/templates/golang/pkg/utils/controller"
 	e "github.com/nikitaSstepanov/tools/error"
 )
 
@@ -20,6 +21,8 @@ type ErrMessage struct {
 }
 
 func AbortErrMsg(c *gin.Context, err e.Error) {
+	cl.GetL(c).Error(err.Error())
+
 	c.AbortWithStatusJSON(
 		err.ToHttpCode(),
 		&ErrMessage{Msg: err.GetMessage()},

@@ -2,7 +2,6 @@ package v1
 
 import (
 	"context"
-	"log/slog"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -14,30 +13,26 @@ import (
 )
 
 type Controller struct {
-	ctx     context.Context
-	account *account.Account
-	auth    *auth.Auth
-	mid     *middleware.Middleware
-	log     *slog.Logger
+	account AccountHandler
+	auth    AuthHandler
+	mid     Middleware
 }
 
-func New(ctx context.Context, uc *usecase.UseCase, logger *slog.Logger, jwtOpts *jwt.JwtOptions) *Controller {
+func New(ctx context.Context, uc *usecase.UseCase, jwtOpts *jwt.JwtOptions) *Controller {
 	return &Controller{
-		ctx:     ctx,
 		account: account.New(uc.Account),
 		auth:    auth.New(uc.Auth),
 		mid:     middleware.New(jwtOpts),
-		log:     logger,
 	}
 }
 
-func (c *Controller) InitRoutes(mode string) *gin.Engine {
+func (c *Controller) InitRoutes(ctx context.Context, mode string) *gin.Engine {
 	setGinMode(mode)
 
 	router := gin.New()
 
 	if gin.Mode() != gin.ReleaseMode {
-		router.Use(c.mid.InitLogger(c.ctx))
+		router.Use(c.mid.InitLogger(ctx))
 	}
 
 	router.GET("/ping", func(ctx *gin.Context) {
@@ -46,9 +41,9 @@ func (c *Controller) InitRoutes(mode string) *gin.Engine {
 
 	api := router.Group("/api/v1")
 	{
-		account := account.InitRoutes(api, c.account, c.mid)
+		account := c.initAccountRoutes(api)
 
-		auth.InitRoutes(account, c.auth, c.mid)
+		c.initAuthRoutes(account)
 	}
 
 	return router

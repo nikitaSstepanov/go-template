@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
 	"github.com/nikitaSstepanov/templates/golang/internal/controller/http/v1/dto"
 	"github.com/nikitaSstepanov/templates/golang/internal/entity"
 	e "github.com/nikitaSstepanov/tools/error"
@@ -37,17 +36,4 @@ type AccountUseCase interface {
 	Verify(ctx context.Context, id uint64, code string) e.Error
 	ResendCode(ctx context.Context, userId uint64) e.Error
 	Delete(ctx context.Context, user *entity.User) e.Error
-}
-
-type AccountHandler interface {
-	Get(ctx *gin.Context)
-	Create(ctx *gin.Context)
-	Update(ctx *gin.Context)
-	Verify(ctx *gin.Context)
-	ResendCode(ctx *gin.Context)
-	Delete(ctx *gin.Context)
-}
-
-type Middleware interface {
-	CheckAccess(roles ...string) gin.HandlerFunc
 }

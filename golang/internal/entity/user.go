@@ -16,8 +16,8 @@ type User struct {
 	Verified bool   `redis:"verified"`
 }
 
-func (u User) MarshalBinary() ([]byte, error) {
-	return json.Marshal(&u)
+func (u *User) MarshalBinary() ([]byte, error) {
+	return json.Marshal(u)
 }
 
 func (u *User) UnmarshalBinary(data []byte) error {
