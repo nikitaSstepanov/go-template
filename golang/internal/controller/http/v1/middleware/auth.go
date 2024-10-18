@@ -1,11 +1,11 @@
 package middleware
 
 import (
-	"net/http"
 	"slices"
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/nikitaSstepanov/templates/golang/internal/controller/http/v1/dto"
 	"github.com/nikitaSstepanov/templates/golang/internal/usecase/pkg/auth"
 	e "github.com/nikitaSstepanov/tools/error"
 )
@@ -29,7 +29,7 @@ func (m *Middleware) CheckAccess(roles ...string) gin.HandlerFunc {
 		header := ctx.GetHeader("Authorization")
 
 		if header == "" {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, foundErr)
+			dto.AbortErrMsg(ctx, foundErr)
 			return
 		}
 
@@ -38,18 +38,18 @@ func (m *Middleware) CheckAccess(roles ...string) gin.HandlerFunc {
 		token := parts[1]
 
 		if bearer != bearerType {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, bearerErr)
+			dto.AbortErrMsg(ctx, bearerErr)
 			return
 		}
 
 		claims, err := m.jwt.ValidateToken(token, false)
 		if err != nil {
-			ctx.AbortWithStatusJSON(err.ToHttpCode(), err)
+			dto.AbortErrMsg(ctx, err)
 			return
 		}
 
 		if len(roles) != 0 && !slices.Contains(roles, claims.Role) {
-			ctx.AbortWithStatusJSON(http.StatusForbidden, forbiddenErr)
+			dto.AbortErrMsg(ctx, forbiddenErr)
 			return
 		}
 

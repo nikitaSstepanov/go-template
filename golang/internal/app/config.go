@@ -9,12 +9,12 @@ import (
 	"github.com/nikitaSstepanov/tools/client/mail"
 	"github.com/nikitaSstepanov/tools/client/pg"
 	"github.com/nikitaSstepanov/tools/client/redis"
-	server "github.com/nikitaSstepanov/tools/http_server"
+	"github.com/nikitaSstepanov/tools/hserv"
 	"github.com/nikitaSstepanov/tools/sl"
 )
 
 type appConfig struct {
-	Server   server.Config   `yaml:"server"`
+	Server   hserv.Config    `yaml:"server"`
 	Postgres pg.Config       `yaml:"postgres"`
 	Redis    redis.Config    `yaml:"redis"`
 	Mail     mail.Config     `yaml:"mail"`

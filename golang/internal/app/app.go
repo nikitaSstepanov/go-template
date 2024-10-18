@@ -10,7 +10,7 @@ import (
 	"github.com/nikitaSstepanov/tools/client/pg"
 	rs "github.com/nikitaSstepanov/tools/client/redis"
 	e "github.com/nikitaSstepanov/tools/error"
-	server "github.com/nikitaSstepanov/tools/http_server"
+	"github.com/nikitaSstepanov/tools/hserv"
 	"github.com/nikitaSstepanov/tools/migrate"
 	"github.com/nikitaSstepanov/tools/sl"
 )
@@ -19,7 +19,7 @@ type App struct {
 	controller *controller.Controller
 	usecase    *usecase.UseCase
 	storage    *storage.Storage
-	server     *server.Server
+	server     *hserv.Server
 	ctx        context.Context
 }
 
@@ -65,7 +65,7 @@ func New() *App {
 
 	handler := app.controller.InitRoutes(ctx, cfg.Mode)
 
-	app.server = server.New(handler, &cfg.Server)
+	app.server = hserv.New(handler, &cfg.Server)
 
 	return app
 }
@@ -76,23 +76,26 @@ func (a *App) Run() {
 	a.server.Start()
 
 	if err := a.shutdown(); err != nil {
-		log.Error("Failed to shutdown server", sl.ErrAttr(err))
+		log.Error("Failed to shutdown app", sl.ErrAttr(err))
+		return
 	}
 
 	log.Info("Application stopped successfully")
 }
 
-func (a *App) shutdown() error {
+func (a *App) shutdown() e.Error {
 	log := sl.L(a.ctx)
 
 	err := e.E(a.server.Shutdown(a.ctx))
 	if err != nil {
 		log.Error("Failed to stop http server", err.SlErr())
+		return err
 	}
 
-	err = e.E(a.storage.Close())
+	err = a.storage.Close()
 	if err != nil {
 		log.Error("Failed to close storage", err.SlErr())
+		return err
 	}
 
 	return nil

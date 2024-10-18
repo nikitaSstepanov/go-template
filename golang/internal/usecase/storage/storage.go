@@ -27,7 +27,7 @@ func New(postgres pg.Client, redis rs.Client) *Storage {
 	}
 }
 
-func (s *Storage) Close() error {
+func (s *Storage) Close() e.Error {
 	s.pg.Close()
 	return e.E(s.rs.Close())
 }

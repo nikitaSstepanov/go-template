@@ -16,15 +16,11 @@ func NewMessage(msg string) *Message {
 	}
 }
 
-type ErrMessage struct {
-	Msg string `json:"error"`
-}
-
 func AbortErrMsg(c *gin.Context, err e.Error) {
-	cl.GetL(c).Error(err.Error())
+	cl.GetL(c).Error("Something going wrong", err.SlErr())
 
 	c.AbortWithStatusJSON(
 		err.ToHttpCode(),
-		&ErrMessage{Msg: err.GetMessage()},
+		err.ToJson(),
 	)
 }

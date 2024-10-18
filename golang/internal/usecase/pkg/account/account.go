@@ -43,7 +43,7 @@ func (a *Account) Create(ctx context.Context, user *entity.User) (*entity.Tokens
 
 	hash, hashErr := hashPassword(user.Password)
 	if hashErr != nil {
-		return nil, internalErr
+		return nil, internalErr.WithErr(err)
 	}
 
 	user.Password = hash
@@ -117,12 +117,12 @@ func (a *Account) Update(ctx context.Context, user *entity.User, pass string) e.
 		}
 
 		if err := checkPassword(old.Password, pass); err != nil {
-			return badPassErr
+			return badPassErr.WithErr(err)
 		}
 
 		hash, hashErr := hashPassword(user.Password)
 		if hashErr != nil {
-			return internalErr
+			return internalErr.WithErr(err)
 		}
 
 		user.Password = hash
@@ -170,7 +170,7 @@ func (a *Account) Delete(ctx context.Context, user *entity.User) e.Error {
 	}
 
 	if err := checkPassword(toDel.Password, user.Password); err != nil {
-		return badPassErr
+		return badPassErr.WithErr(err)
 	}
 
 	return a.user.Delete(ctx, user)

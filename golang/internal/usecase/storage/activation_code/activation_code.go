@@ -24,9 +24,9 @@ func (c *Code) Get(ctx context.Context, userId uint64) (*entity.ActivationCode, 
 	err := c.redis.Get(ctx, redisKey(userId)).Scan(&result)
 	if err != nil {
 		if err == rs.Nil {
-			return nil, notFoundErr
+			return nil, notFoundErr.WithErr(err)
 		} else {
-			return nil, internalErr
+			return nil, internalErr.WithErr(err)
 		}
 	}
 
@@ -36,7 +36,7 @@ func (c *Code) Get(ctx context.Context, userId uint64) (*entity.ActivationCode, 
 func (c *Code) Set(ctx context.Context, code *entity.ActivationCode) e.Error {
 	err := c.redis.Set(ctx, redisKey(code.UserId), code, redisExpires).Err()
 	if err != nil {
-		return internalErr
+		return internalErr.WithErr(err)
 	}
 
 	return nil
@@ -45,7 +45,7 @@ func (c *Code) Set(ctx context.Context, code *entity.ActivationCode) e.Error {
 func (c *Code) Del(ctx context.Context, userId uint64) e.Error {
 	err := c.redis.Del(ctx, redisKey(userId)).Err()
 	if err != nil {
-		return internalErr
+		return internalErr.WithErr(err)
 	}
 
 	return nil

@@ -6,17 +6,16 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	cl "github.com/nikitaSstepanov/templates/golang/pkg/utils/controller"
 	"github.com/nikitaSstepanov/tools/sl"
 )
-
-const CtxLoggerKey = "log"
 
 func (m *Middleware) InitLogger(ctx context.Context) gin.HandlerFunc {
 	log := sl.L(ctx)
 
 	log.Info("logger middleware enabled.")
 	return func(c *gin.Context) {
-		c.Set(CtxLoggerKey, log)
+		c.Set(cl.CtxLoggerKey, log)
 
 		req := c.Request
 

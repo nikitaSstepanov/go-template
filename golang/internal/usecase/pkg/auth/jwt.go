@@ -32,11 +32,11 @@ func (j *Jwt) ValidateToken(jwtString string, isRefresh bool) (*Claims, e.Error)
 
 	token, err := jwt.ParseWithClaims(jwtString, &Claims{}, keyFunc)
 	if err != nil {
-		return nil, unauthErr
+		return nil, unauthErr.WithErr(err)
 	}
 
 	if !token.Valid {
-		return nil, unauthErr
+		return nil, unauthErr.WithErr(err)
 	}
 
 	return token.Claims.(*Claims), nil
@@ -63,7 +63,7 @@ func (j *Jwt) GenerateToken(id uint64, role string, expires time.Duration, isRef
 
 	tokenString, err := token.SignedString([]byte(key))
 	if err != nil {
-		return "", internalErr
+		return "", internalErr.WithErr(err)
 	}
 
 	return tokenString, nil

@@ -33,7 +33,7 @@ func (a *Auth) Login(ctx context.Context, user *entity.User) (*entity.Tokens, e.
 	}
 
 	if err := a.checkPassword(candidate.Password, user.Password); err != nil {
-		return nil, badDataErr
+		return nil, badDataErr.WithErr(err)
 	}
 
 	access, err := a.jwt.GenerateToken(candidate.Id, candidate.Role, accessExpires, false)

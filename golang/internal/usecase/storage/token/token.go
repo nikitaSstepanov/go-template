@@ -24,9 +24,9 @@ func (t *Token) Get(ctx context.Context, userId uint64) (*entity.Token, e.Error)
 	err := t.redis.Get(ctx, redisKey(userId)).Scan(&token)
 	if err != nil {
 		if err == rs.Nil {
-			return nil, notFoundErr
+			return nil, notFoundErr.WithErr(err)
 		} else {
-			return nil, internalErr
+			return nil, internalErr.WithErr(err)
 		}
 	}
 
@@ -36,7 +36,7 @@ func (t *Token) Get(ctx context.Context, userId uint64) (*entity.Token, e.Error)
 func (t *Token) Set(ctx context.Context, token *entity.Token) e.Error {
 	err := t.redis.Set(ctx, redisKey(token.UserId), token, redisExpires).Err()
 	if err != nil {
-		return internalErr
+		return internalErr.WithErr(err)
 	}
 
 	return nil
@@ -45,7 +45,7 @@ func (t *Token) Set(ctx context.Context, token *entity.Token) e.Error {
 func (t *Token) Del(ctx context.Context, userId uint64) e.Error {
 	err := t.redis.Del(ctx, redisKey(userId)).Err()
 	if err != nil {
-		return internalErr
+		return internalErr.WithErr(err)
 	}
 
 	return nil
