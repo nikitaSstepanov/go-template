@@ -16,8 +16,18 @@ func NewMessage(msg string) *Message {
 	}
 }
 
+// JsonError use only for doc and represent e.JsonError
+type JsonError struct {
+	Error string `json:"error"`
+}
+
 func AbortErrMsg(c *gin.Context, err e.Error) {
-	cl.GetL(c).Error("Something going wrong", err.SlErr())
+	log := cl.GetL(c)
+	if err.GetCode() == e.Internal {
+		log.Error("Something going wrong", err.SlErr())
+	} else {
+		log.Info("Invalid data", err.SlErr())
+	}
 
 	c.AbortWithStatusJSON(
 		err.ToHttpCode(),

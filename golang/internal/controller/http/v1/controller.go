@@ -41,9 +41,10 @@ func (c *Controller) InitRoutes(ctx context.Context, mode string) *gin.Engine {
 
 	api := router.Group("/api/v1")
 	{
+		c.initSwaggerRoute(api)
 		account := c.initAccountRoutes(api)
-
 		c.initAuthRoutes(account)
+
 	}
 
 	return router

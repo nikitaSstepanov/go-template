@@ -17,6 +17,16 @@ func New(uc AccountUseCase) *Account {
 	}
 }
 
+// @Summary Retrieve user by ID
+// @Description Returns user information based on their ID.
+// @Tags account
+// @Accept json
+// @Produce json
+// @Param userId path uint64 true "User ID"
+// @Success 200 {object} dto.Account "Successful response"
+// @Failure 500 {object} dto.JsonError "Something going wrong..."
+// @Failure 404 {object} dto.JsonError "This user wasn`t found."
+// @Router /api/v1/account/account [get]
 func (a *Account) Get(c *gin.Context) {
 	userId := c.GetUint64("userId")
 
@@ -31,11 +41,24 @@ func (a *Account) Get(c *gin.Context) {
 	c.JSON(ok, result)
 }
 
+// @title Create User
+// @Summary Create User
+// @Description Creates a new user and returns access tokens.
+// @Tags account
+// @Accept json
+// @Produce json
+// @Param body body dto.CreateUser true "Data for creating a user"
+// @Success 200 {object} dto.Token "Successful response with token"
+// @Failure 400 {object} dto.JsonError "Incorrect data"
+// @Failure 403 {object} dto.JsonError "Incorrect password"
+// @Failure 409 {object} dto.JsonError "User with this email already exist"
+// @Failure 500 {object} dto.JsonError "Something going wrong..."
+// @Router /api/v1/account/new [post]
 func (a *Account) Create(c *gin.Context) {
 	var body dto.CreateUser
 
 	if err := c.ShouldBindJSON(&body); err != nil {
-		dto.AbortErrMsg(c, badReqErr)
+		dto.AbortErrMsg(c, badReqErr.WithErr(err))
 		return
 	}
 
@@ -59,13 +82,30 @@ func (a *Account) Create(c *gin.Context) {
 	c.JSON(ok, result)
 }
 
+// @Summary Update user information
+// @Description Updates the user's information including password.
+// @Tags account
+// @Accept json
+// @Produce json
+// @Param userId path uint64 true "User ID"
+// @Param body body dto.UpdateUser true "User update data"
+// @Success 200 {object} dto.Message "Updated."
+// @Failure 400 {object} dto.JsonError "Incorrect data."
+// @Failure 400 {object} dto.JsonError "Your activation code is wrong."
+// @Failure 401 {object} dto.JsonError "Authorization header wasn't found"
+// @Failure 401 {object} dto.JsonError "Token is not bearer"
+// @Failure 403 {object} dto.JsonError "This resource is forbidden"
+// @Failure 404 {object} dto.JsonError "This user wasn't found"
+// @Failure 409 {object} dto.JsonError "User with this email already exists"
+// @Failure 500 {object} dto.JsonError "Something going wrong..."
+// @Router /api/v1/account/edit [patch]
 func (a *Account) Update(c *gin.Context) {
 	userId := c.GetUint64("userId")
 
 	var body dto.UpdateUser
 
 	if err := c.ShouldBindJSON(&body); err != nil {
-		dto.AbortErrMsg(c, badReqErr)
+		dto.AbortErrMsg(c, badReqErr.WithErr(err))
 		return
 	}
 
@@ -86,6 +126,22 @@ func (a *Account) Update(c *gin.Context) {
 	c.JSON(ok, updatedMsg)
 }
 
+// @Summary Verify user activation code
+// @Description Verifies the provided activation code for the user.
+// @Tags account
+// @Accept json
+// @Produce json
+// @Param userId path uint64 true "User ID"
+// @Param code path string true "Activation Code" minlength(8) maxlength(50)
+// @Success 200 {object} dto.Message "Verified."
+// @Failure 400 {object} dto.JsonError "Your activation code is wrong."
+// @Failure 400 {object} dto.JsonError "Bad string length"
+// @Failure 401 {object} dto.JsonError "Authorization header wasn`t found"
+// @Failure 401 {object} dto.JsonError "Token is not bearer"
+// @Failure 403 {object} dto.JsonError "This resource is forbidden"
+// @Failure 404 {object} dto.JsonError "This code wasn`t found."
+// @Failure 500 {object} dto.JsonError "Something going wrong..."
+// @Router /api/v1/account/verify/confirm/{code} [get]
 func (a *Account) Verify(c *gin.Context) {
 	userId := c.GetUint64("userId")
 
@@ -105,6 +161,21 @@ func (a *Account) Verify(c *gin.Context) {
 	c.JSON(ok, verifiedMsg)
 }
 
+// @Summary Resend verification code
+// @Description Resends a verification code to the user's email or phone number.
+// @Tags account
+// @Accept json
+// @Produce json
+// @Param userId path uint64 true "User ID"
+// @Success 200 {object} dto.Message "Ok."
+// @Failure 400 {object} dto.JsonError "Incorrect data"
+// @Failure 401 {object} dto.JsonError "This resource is forbidden"
+// @Failure 401 {object} dto.JsonError "Token is not bearer"
+// @Failure 401 {object} dto.JsonError "Authorization header wasn`t found"
+// @Failure 403 {object} dto.JsonError "This resource is forbidden"
+// @Failure 404 {object} dto.JsonError "User not found"
+// @Failure 500 {object} dto.JsonError "Something going wrong..."
+// @Router /api/v1/account/verify/resend [get]
 func (a *Account) ResendCode(c *gin.Context) {
 	userId := c.GetUint64("userId")
 
@@ -117,13 +188,26 @@ func (a *Account) ResendCode(c *gin.Context) {
 	c.JSON(ok, okMsg)
 }
 
+// @Summary Delete user account
+// @Description Deletes a user account by ID.
+// @Tags account
+// @Accept json
+// @Produce json
+// @Param userId path uint64 true "User ID"
+// @Param body body dto.DeleteUser true "Delete User Request"
+// @Success 200 {object} dto.Message "Ok."
+// @Failure 400 {object} dto.JsonError "Incorrect data"
+// @Failure 401 {object} dto.JsonError "Authorization header wasn`t found"
+// @Failure 401 {object} dto.JsonError "Token is not bearer"
+// @Failure 403 {object} dto.JsonError "This resource is forbidden"
+// @Router /api/v1/account/ [delete]
 func (a *Account) Delete(c *gin.Context) {
 	userId := c.GetUint64("userId")
 
 	var body dto.DeleteUser
 
 	if err := c.ShouldBindJSON(&body); err != nil {
-		dto.AbortErrMsg(c, badReqErr)
+		dto.AbortErrMsg(c, badReqErr.WithErr(err))
 		return
 	}
 

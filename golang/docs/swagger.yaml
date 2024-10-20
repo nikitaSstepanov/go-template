@@ -1,0 +1,324 @@
+definitions:
+  dto.Account:
+    properties:
+      age:
+        type: integer
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  dto.CreateUser:
+    properties:
+      age:
+        maximum: 200
+        minimum: 0
+        type: integer
+      email:
+        type: string
+      name:
+        minLength: 1
+        type: string
+      password:
+        maxLength: 50
+        minLength: 8
+        type: string
+    required:
+    - email
+    - name
+    - password
+    type: object
+  dto.DeleteUser:
+    properties:
+      password:
+        maxLength: 50
+        minLength: 8
+        type: string
+    type: object
+  dto.JsonError:
+    properties:
+      error:
+        type: string
+    type: object
+  dto.Message:
+    properties:
+      message:
+        type: string
+    type: object
+  dto.Token:
+    properties:
+      token:
+        type: string
+    type: object
+  dto.UpdateUser:
+    properties:
+      age:
+        maximum: 200
+        minimum: 0
+        type: integer
+      email:
+        type: string
+      name:
+        minLength: 1
+        type: string
+      oldPassword:
+        maxLength: 50
+        minLength: 8
+        type: string
+      password:
+        maxLength: 50
+        minLength: 8
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/account/:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a user account by ID.
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: integer
+      - description: Delete User Request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.DeleteUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok.
+          schema:
+            $ref: '#/definitions/dto.Message'
+        "400":
+          description: Incorrect data
+          schema:
+            $ref: '#/definitions/dto.JsonError'
+        "401":
+          description: Token is not bearer
+          schema:
+            $ref: '#/definitions/dto.JsonError'
+        "403":
+          description: This resource is forbidden
+          schema:
+            $ref: '#/definitions/dto.JsonError'
+      summary: Delete user account
+      tags:
+      - account
+  /api/v1/account/account:
+    get:
+      consumes:
+      - application/json
+      description: Returns user information based on their ID.
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful response
+          schema:
+            $ref: '#/definitions/dto.Account'
+        "404":
+          description: This user wasn`t found.
+          schema:
+            $ref: '#/definitions/dto.JsonError'
+        "500":
+          description: Something going wrong...
+          schema:
+            $ref: '#/definitions/dto.JsonError'
+      summary: Retrieve user by ID
+      tags:
+      - account
+  /api/v1/account/edit:
+    patch:
+      consumes:
+      - application/json
+      description: Updates the user's information including password.
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: integer
+      - description: User update data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated.
+          schema:
+            $ref: '#/definitions/dto.Message'
+        "400":
+          description: Your activation code is wrong.
+          schema:
+            $ref: '#/definitions/dto.JsonError'
+        "401":
+          description: Token is not bearer
+          schema:
+            $ref: '#/definitions/dto.JsonError'
+        "403":
+          description: This resource is forbidden
+          schema:
+            $ref: '#/definitions/dto.JsonError'
+        "404":
+          description: This user wasn't found
+          schema:
+            $ref: '#/definitions/dto.JsonError'
+        "409":
+          description: User with this email already exists
+          schema:
+            $ref: '#/definitions/dto.JsonError'
+        "500":
+          description: Something going wrong...
+          schema:
+            $ref: '#/definitions/dto.JsonError'
+      summary: Update user information
+      tags:
+      - account
+  /api/v1/account/new:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user and returns access tokens.
+      parameters:
+      - description: Data for creating a user
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful response with token
+          schema:
+            $ref: '#/definitions/dto.Token'
+        "400":
+          description: Incorrect data
+          schema:
+            $ref: '#/definitions/dto.JsonError'
+        "403":
+          description: Incorrect password
+          schema:
+            $ref: '#/definitions/dto.JsonError'
+        "409":
+          description: User with this email already exist
+          schema:
+            $ref: '#/definitions/dto.JsonError'
+        "500":
+          description: Something going wrong...
+          schema:
+            $ref: '#/definitions/dto.JsonError'
+      summary: Create User
+      tags:
+      - account
+  /api/v1/account/verify/confirm/{code}:
+    get:
+      consumes:
+      - application/json
+      description: Verifies the provided activation code for the user.
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: integer
+      - description: Activation Code
+        in: path
+        maxLength: 50
+        minLength: 8
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Verified.
+          schema:
+            $ref: '#/definitions/dto.Message'
+        "400":
+          description: Bad string length
+          schema:
+            $ref: '#/definitions/dto.JsonError'
+        "401":
+          description: Token is not bearer
+          schema:
+            $ref: '#/definitions/dto.JsonError'
+        "403":
+          description: This resource is forbidden
+          schema:
+            $ref: '#/definitions/dto.JsonError'
+        "404":
+          description: This code wasn`t found.
+          schema:
+            $ref: '#/definitions/dto.JsonError'
+        "500":
+          description: Something going wrong...
+          schema:
+            $ref: '#/definitions/dto.JsonError'
+      summary: Verify user activation code
+      tags:
+      - account
+  /api/v1/account/verify/resend:
+    get:
+      consumes:
+      - application/json
+      description: Resends a verification code to the user's email or phone number.
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok.
+          schema:
+            $ref: '#/definitions/dto.Message'
+        "400":
+          description: Incorrect data
+          schema:
+            $ref: '#/definitions/dto.JsonError'
+        "401":
+          description: Authorization header wasn`t found
+          schema:
+            $ref: '#/definitions/dto.JsonError'
+        "403":
+          description: This resource is forbidden
+          schema:
+            $ref: '#/definitions/dto.JsonError'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/dto.JsonError'
+        "500":
+          description: Something going wrong...
+          schema:
+            $ref: '#/definitions/dto.JsonError'
+      summary: Resend verification code
+      tags:
+      - account
+swagger: "2.0"

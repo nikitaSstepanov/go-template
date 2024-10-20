@@ -3,6 +3,14 @@ run:
 	go build -o ./bin/app ./cmd/app
 	./bin/app
 
+gen-swagger-docs:
+	swag init -g cmd/app/main.go
+
+gen-code:
+	openapi-generator-cli generate -i docs/swagger.yaml \
+		-g go-gin-server -o ./gen/api --additional-properties=apiPath=controller,packageName=api,enumClassPrefix=true
+        
+
 docker-up:
 	docker-compose --file ./deploy/docker/docker-compose.yaml --env-file .env up --detach
 
