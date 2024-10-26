@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/ilyakaznacheev/cleanenv"
@@ -64,8 +63,6 @@ func getConfigPath() string {
 
 func setSwaggerConfig(cfg SwaggerSpec) {
 	info := docs.SwaggerInfo
-
-	fmt.Println(cfg.BasePath)
 
 	info.Version = cfg.Version
 	info.Host = cfg.Host
