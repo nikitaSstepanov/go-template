@@ -29,6 +29,9 @@ func New(ctx context.Context, uc *usecase.UseCase, jwtOpts *jwt.JwtOptions) *Con
 func (c *Controller) InitRoutes(ctx context.Context, mode string) *gin.Engine {
 	setGinMode(mode)
 
+	//@sucurityDefinitions.apikey Bearer
+	//@in header
+	//@name Authorization
 	router := gin.New()
 
 	if gin.Mode() != gin.ReleaseMode {

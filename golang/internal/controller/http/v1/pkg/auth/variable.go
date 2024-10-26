@@ -24,7 +24,6 @@ const (
 
 var (
 	badReqErr = e.New("Incorrect data.", e.BadInput)
-	unauthErr = e.New("You are unauth.", e.Unauthorize)
 
 	logoutMsg = dto.NewMessage("Logout success.")
 )

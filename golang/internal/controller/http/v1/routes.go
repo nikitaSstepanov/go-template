@@ -22,8 +22,6 @@ func (c *Controller) initAccountRoutes(h *gin.RouterGroup) *gin.RouterGroup {
 }
 
 func (c *Controller) initSwaggerRoute(h *gin.RouterGroup) *gin.RouterGroup {
-	// TODO: docs.SwaggerInfo{ ... }
-
 	router := h.Group("swagger")
 	{
 		router.GET("/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))

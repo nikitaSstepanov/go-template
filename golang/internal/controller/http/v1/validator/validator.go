@@ -7,7 +7,9 @@ import (
 
 func Struct(s interface{}, args ...Arg) e.Error {
 	validate := validator.New()
-	setupArgs(validate, args)
+	if err := setupArgs(validate, args); err != nil {
+		return e.New("Incorrect data", e.BadInput, err)
+	}
 
 	err := validate.Struct(s)
 	if err != nil {

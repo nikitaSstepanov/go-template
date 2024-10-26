@@ -1,10 +1,12 @@
 package app
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/joho/godotenv"
+	"github.com/nikitaSstepanov/templates/golang/docs"
 	"github.com/nikitaSstepanov/templates/golang/internal/usecase/pkg/auth"
 	"github.com/nikitaSstepanov/tools/client/mail"
 	"github.com/nikitaSstepanov/tools/client/pg"
@@ -21,6 +23,16 @@ type appConfig struct {
 	Jwt      auth.JwtOptions `yaml:"jwt"`
 	Logger   sl.Config       `yaml:"logger"`
 	Mode     string          `yaml:"mode" env:"MODE" env-default:"DEBUG"`
+	Swagger  SwaggerSpec     `yaml:"swagger"`
+}
+
+type SwaggerSpec struct {
+	Version     string   `yaml:"version"`
+	Host        string   `yaml:"host"`
+	BasePath    string   `yaml:"base_path"`
+	Schemes     []string `yaml:"schemes"`
+	Title       string   `yaml:"title"`
+	Description string   `yaml:"description"`
 }
 
 func getAppConfig() (*appConfig, error) {
@@ -48,4 +60,17 @@ func getConfigPath() string {
 	}
 
 	return path
+}
+
+func setSwaggerConfig(cfg SwaggerSpec) {
+	info := docs.SwaggerInfo
+
+	fmt.Println(cfg.BasePath)
+
+	info.Version = cfg.Version
+	info.Host = cfg.Host
+	info.BasePath = cfg.BasePath
+	info.Schemes = cfg.Schemes
+	info.Title = cfg.Title
+	info.Description = cfg.Description
 }

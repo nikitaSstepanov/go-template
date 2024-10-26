@@ -15,7 +15,180 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1/account/": {
+        "/account/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Returns user information based on their ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "account"
+                ],
+                "summary": "Retrieve user by ID",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Account"
+                        }
+                    },
+                    "404": {
+                        "description": "This user wasn` + "`" + `t found.",
+                        "schema": {
+                            "$ref": "#/definitions/dto.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Something going wrong...",
+                        "schema": {
+                            "$ref": "#/definitions/dto.JsonError"
+                        }
+                    }
+                }
+            }
+        },
+        "/account/auth/login": {
+            "post": {
+                "description": "Logs in a user with email and password",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Log in a user",
+                "parameters": [
+                    {
+                        "description": "Login information",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.Login"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Access token",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Token"
+                        }
+                    },
+                    "400": {
+                        "description": "Incorrect data",
+                        "schema": {
+                            "$ref": "#/definitions/dto.JsonError"
+                        }
+                    },
+                    "401": {
+                        "description": "Incorrect email or password",
+                        "schema": {
+                            "$ref": "#/definitions/dto.JsonError"
+                        }
+                    },
+                    "404": {
+                        "description": "This user wasn't found.",
+                        "schema": {
+                            "$ref": "#/definitions/dto.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Something going wrong...",
+                        "schema": {
+                            "$ref": "#/definitions/dto.JsonError"
+                        }
+                    }
+                }
+            }
+        },
+        "/account/auth/logout": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Logs out a user by invalidating the session",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Log out a user",
+                "responses": {
+                    "200": {
+                        "description": "Logout success.",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Message"
+                        }
+                    },
+                    "500": {
+                        "description": "Something going wrong...",
+                        "schema": {
+                            "$ref": "#/definitions/dto.JsonError"
+                        }
+                    }
+                }
+            }
+        },
+        "/account/auth/refresh": {
+            "get": {
+                "description": "Refreshes the user's tokens using the refresh token from the cookie",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Refresh user tokens",
+                "responses": {
+                    "200": {
+                        "description": "Refresh token",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Token"
+                        }
+                    },
+                    "401": {
+                        "description": "Token is invalid",
+                        "schema": {
+                            "$ref": "#/definitions/dto.JsonError"
+                        }
+                    },
+                    "404": {
+                        "description": "Your token wasn't found., This user wasn't found.",
+                        "schema": {
+                            "$ref": "#/definitions/dto.JsonError"
+                        }
+                    },
+                    "500": {
+                        "description": "Something going wrong...",
+                        "schema": {
+                            "$ref": "#/definitions/dto.JsonError"
+                        }
+                    }
+                }
+            }
+        },
+        "/account/delete": {
             "delete": {
                 "description": "Deletes a user account by ID.",
                 "consumes": [
@@ -29,13 +202,6 @@ const docTemplate = `{
                 ],
                 "summary": "Delete user account",
                 "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "User ID",
-                        "name": "userId",
-                        "in": "path",
-                        "required": true
-                    },
                     {
                         "description": "Delete User Request",
                         "name": "body",
@@ -60,51 +226,13 @@ const docTemplate = `{
                         }
                     },
                     "401": {
-                        "description": "Token is not bearer",
+                        "description": "Authorization header wasn` + "`" + `t found, Token is not bearer",
                         "schema": {
                             "$ref": "#/definitions/dto.JsonError"
                         }
                     },
                     "403": {
                         "description": "This resource is forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/dto.JsonError"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/account/account": {
-            "get": {
-                "description": "Returns user information based on their ID.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "account"
-                ],
-                "summary": "Retrieve user by ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "User ID",
-                        "name": "userId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful response",
-                        "schema": {
-                            "$ref": "#/definitions/dto.Account"
-                        }
-                    },
-                    "404": {
-                        "description": "This user wasn` + "`" + `t found.",
                         "schema": {
                             "$ref": "#/definitions/dto.JsonError"
                         }
@@ -118,8 +246,13 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/account/edit": {
+        "/account/edit": {
             "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Updates the user's information including password.",
                 "consumes": [
                     "application/json"
@@ -132,13 +265,6 @@ const docTemplate = `{
                 ],
                 "summary": "Update user information",
                 "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "User ID",
-                        "name": "userId",
-                        "in": "path",
-                        "required": true
-                    },
                     {
                         "description": "User update data",
                         "name": "body",
@@ -157,13 +283,13 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Your activation code is wrong.",
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/dto.JsonError"
                         }
                     },
                     "401": {
-                        "description": "Token is not bearer",
+                        "description": "Authorization header wasn't found, Token is not bearer",
                         "schema": {
                             "$ref": "#/definitions/dto.JsonError"
                         }
@@ -195,7 +321,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/account/new": {
+        "/account/new": {
             "post": {
                 "description": "Creates a new user and returns access tokens.",
                 "consumes": [
@@ -253,8 +379,13 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/account/verify/confirm/{code}": {
+        "/account/verify/confirm/{code}": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Verifies the provided activation code for the user.",
                 "consumes": [
                     "application/json"
@@ -267,13 +398,6 @@ const docTemplate = `{
                 ],
                 "summary": "Verify user activation code",
                 "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "User ID",
-                        "name": "userId",
-                        "in": "path",
-                        "required": true
-                    },
                     {
                         "maxLength": 50,
                         "minLength": 8,
@@ -292,13 +416,13 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad string length",
+                        "description": "Your activation code is wrong., Bad string length",
                         "schema": {
                             "$ref": "#/definitions/dto.JsonError"
                         }
                     },
                     "401": {
-                        "description": "Token is not bearer",
+                        "description": "Authorization header wasn` + "`" + `t found, Token is not bearer",
                         "schema": {
                             "$ref": "#/definitions/dto.JsonError"
                         }
@@ -324,8 +448,13 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/account/verify/resend": {
+        "/account/verify/resend": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Resends a verification code to the user's email or phone number.",
                 "consumes": [
                     "application/json"
@@ -337,15 +466,6 @@ const docTemplate = `{
                     "account"
                 ],
                 "summary": "Resend verification code",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "User ID",
-                        "name": "userId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "Ok.",
@@ -360,7 +480,7 @@ const docTemplate = `{
                         }
                     },
                     "401": {
-                        "description": "Authorization header wasn` + "`" + `t found",
+                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/dto.JsonError"
                         }
@@ -447,6 +567,23 @@ const docTemplate = `{
             "properties": {
                 "error": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.Login": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 8
                 }
             }
         },

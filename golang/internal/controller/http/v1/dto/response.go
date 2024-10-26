@@ -23,10 +23,11 @@ type JsonError struct {
 
 func AbortErrMsg(c *gin.Context, err e.Error) {
 	log := cl.GetL(c)
+
 	if err.GetCode() == e.Internal {
-		log.Error("Something going wrong", err.SlErr())
+		log.Error("Something going wrong...", err.SlErr())
 	} else {
-		log.Info("Invalid data", err.SlErr())
+		log.Info("Invalid input data", err.SlErr())
 	}
 
 	c.AbortWithStatusJSON(

@@ -22,11 +22,11 @@ func New(uc AccountUseCase) *Account {
 // @Tags account
 // @Accept json
 // @Produce json
-// @Param userId path uint64 true "User ID"
+// @Security Bearer
 // @Success 200 {object} dto.Account "Successful response"
-// @Failure 500 {object} dto.JsonError "Something going wrong..."
 // @Failure 404 {object} dto.JsonError "This user wasn`t found."
-// @Router /api/v1/account/account [get]
+// @Failure 500 {object} dto.JsonError "Something going wrong..."
+// @Router /account/ [get]
 func (a *Account) Get(c *gin.Context) {
 	userId := c.GetUint64("userId")
 
@@ -53,7 +53,7 @@ func (a *Account) Get(c *gin.Context) {
 // @Failure 403 {object} dto.JsonError "Incorrect password"
 // @Failure 409 {object} dto.JsonError "User with this email already exist"
 // @Failure 500 {object} dto.JsonError "Something going wrong..."
-// @Router /api/v1/account/new [post]
+// @Router /account/new [post]
 func (a *Account) Create(c *gin.Context) {
 	var body dto.CreateUser
 
@@ -87,18 +87,17 @@ func (a *Account) Create(c *gin.Context) {
 // @Tags account
 // @Accept json
 // @Produce json
-// @Param userId path uint64 true "User ID"
 // @Param body body dto.UpdateUser true "User update data"
+// @Security Bearer
 // @Success 200 {object} dto.Message "Updated."
-// @Failure 400 {object} dto.JsonError "Incorrect data."
-// @Failure 400 {object} dto.JsonError "Your activation code is wrong."
-// @Failure 401 {object} dto.JsonError "Authorization header wasn't found"
-// @Failure 401 {object} dto.JsonError "Token is not bearer"
+// @Failure 400 {object} dto.JsonError "Incorrect data., Your activation code is wrong."
+// @Failure 400 {object} dto.JsonError
+// @Failure 401 {object} dto.JsonError "Authorization header wasn't found, Token is not bearer"
 // @Failure 403 {object} dto.JsonError "This resource is forbidden"
 // @Failure 404 {object} dto.JsonError "This user wasn't found"
 // @Failure 409 {object} dto.JsonError "User with this email already exists"
 // @Failure 500 {object} dto.JsonError "Something going wrong..."
-// @Router /api/v1/account/edit [patch]
+// @Router /account/edit [patch]
 func (a *Account) Update(c *gin.Context) {
 	userId := c.GetUint64("userId")
 
@@ -131,17 +130,15 @@ func (a *Account) Update(c *gin.Context) {
 // @Tags account
 // @Accept json
 // @Produce json
-// @Param userId path uint64 true "User ID"
+// @Security Bearer
 // @Param code path string true "Activation Code" minlength(8) maxlength(50)
 // @Success 200 {object} dto.Message "Verified."
-// @Failure 400 {object} dto.JsonError "Your activation code is wrong."
-// @Failure 400 {object} dto.JsonError "Bad string length"
-// @Failure 401 {object} dto.JsonError "Authorization header wasn`t found"
-// @Failure 401 {object} dto.JsonError "Token is not bearer"
+// @Failure 400 {object} dto.JsonError "Your activation code is wrong., Bad string length"
+// @Failure 401 {object} dto.JsonError "Authorization header wasn`t found, Token is not bearer"
 // @Failure 403 {object} dto.JsonError "This resource is forbidden"
 // @Failure 404 {object} dto.JsonError "This code wasn`t found."
 // @Failure 500 {object} dto.JsonError "Something going wrong..."
-// @Router /api/v1/account/verify/confirm/{code} [get]
+// @Router /account/verify/confirm/{code} [get]
 func (a *Account) Verify(c *gin.Context) {
 	userId := c.GetUint64("userId")
 
@@ -166,16 +163,14 @@ func (a *Account) Verify(c *gin.Context) {
 // @Tags account
 // @Accept json
 // @Produce json
-// @Param userId path uint64 true "User ID"
+// @Security Bearer
 // @Success 200 {object} dto.Message "Ok."
 // @Failure 400 {object} dto.JsonError "Incorrect data"
-// @Failure 401 {object} dto.JsonError "This resource is forbidden"
-// @Failure 401 {object} dto.JsonError "Token is not bearer"
-// @Failure 401 {object} dto.JsonError "Authorization header wasn`t found"
+// @Failure 401 {object} dto.JsonError `"This resource is forbidden, Authorization header wasn`t found, Token is not bearer"`
 // @Failure 403 {object} dto.JsonError "This resource is forbidden"
 // @Failure 404 {object} dto.JsonError "User not found"
 // @Failure 500 {object} dto.JsonError "Something going wrong..."
-// @Router /api/v1/account/verify/resend [get]
+// @Router /account/verify/resend [get]
 func (a *Account) ResendCode(c *gin.Context) {
 	userId := c.GetUint64("userId")
 
@@ -193,14 +188,13 @@ func (a *Account) ResendCode(c *gin.Context) {
 // @Tags account
 // @Accept json
 // @Produce json
-// @Param userId path uint64 true "User ID"
 // @Param body body dto.DeleteUser true "Delete User Request"
 // @Success 200 {object} dto.Message "Ok."
 // @Failure 400 {object} dto.JsonError "Incorrect data"
-// @Failure 401 {object} dto.JsonError "Authorization header wasn`t found"
-// @Failure 401 {object} dto.JsonError "Token is not bearer"
+// @Failure 401 {object} dto.JsonError "Authorization header wasn`t found, Token is not bearer"
 // @Failure 403 {object} dto.JsonError "This resource is forbidden"
-// @Router /api/v1/account/ [delete]
+// @Failure 500 {object} dto.JsonError "Something going wrong..."
+// @Router /account/delete [delete]
 func (a *Account) Delete(c *gin.Context) {
 	userId := c.GetUint64("userId")
 

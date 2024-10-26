@@ -34,4 +34,13 @@ logger:
     is_json:     true
     set_default: true
 
+swagger:
+    version: "1.0"
+    base_path: "/api/v1/"
+    host: "localhost:8080"
+    schemes:
+    - "http"
+    title: "Template of API"
+    description: "This is the API documentation for template API."
+
 mode: "DEBUG"

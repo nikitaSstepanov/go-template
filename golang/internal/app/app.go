@@ -35,23 +35,25 @@ func New() *App {
 
 	pg, err := pg.ConnectToDb(ctx, &cfg.Postgres)
 	if err != nil {
-		logger.Error("Can`t connect to postgres. Error: " + err.Error())
+		logger.Error("Can`t connect to postgres", sl.ErrAttr(err))
 	} else {
 		logger.Info("Connect to postgres succesfully")
 	}
 
 	if err := migrate.MigratePg(pg, "./migrations"); err != nil {
-		logger.Error("Can`t migrate postgres scheme. Error: " + err.Error())
+		logger.Error("Can`t migrate postgres scheme.", sl.ErrAttr(err))
 	} else {
 		logger.Info("Postgres scheme migrated")
 	}
 
 	redis, err := rs.ConnectToRedis(ctx, &cfg.Redis)
 	if err != nil {
-		logger.Error("Can`t connect to redis. Error: " + err.Error())
+		logger.Error("Can`t connect to redis.", sl.ErrAttr(err))
 	} else {
 		logger.Info("Connect to redis succesfully")
 	}
+
+	setSwaggerConfig(cfg.Swagger)
 
 	app := &App{}
 

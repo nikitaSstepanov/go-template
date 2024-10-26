@@ -17,15 +17,17 @@ var (
 
 type Arg int
 
-func setupArgs(validate *validator.Validate, args []Arg) {
-	for i := 0; i < len(args); i++ {
+func setupArgs(validate *validator.Validate, args []Arg) error {
+	for i := range len(args) {
 		switch args[i] {
 		case Password:
-			validate.RegisterValidation("password", validatePassword)
+			return validate.RegisterValidation("password", validatePassword)
 		default:
-			return
+			return nil
 		}
 	}
+
+	return nil
 }
 
 func validatePassword(fl validator.FieldLevel) bool {
