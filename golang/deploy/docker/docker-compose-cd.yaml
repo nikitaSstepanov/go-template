@@ -38,7 +38,7 @@ services:
 
     app:
         container_name: app
-        image: ${IMAGE_REF}
+        image: ${APP_IMAGE}
         environment:
             CONFIG_PATH: "config/docker.yaml"
         depends_on:
