@@ -179,6 +179,11 @@
         },
         "/account/delete": {
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Deletes a user account by ID.",
                 "consumes": [
                     "application/json"
@@ -618,6 +623,13 @@
                     "minLength": 8
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

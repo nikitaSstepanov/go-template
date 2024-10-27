@@ -189,6 +189,7 @@ func (a *Account) ResendCode(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param body body dto.DeleteUser true "Delete User Request"
+// @Security Bearer
 // @Success 200 {object} dto.Message "Ok."
 // @Failure 400 {object} dto.JsonError "Incorrect data"
 // @Failure 401 {object} dto.JsonError "Authorization header wasn`t found, Token is not bearer"
