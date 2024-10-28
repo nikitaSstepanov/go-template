@@ -7,6 +7,7 @@ import (
 	controller "github.com/nikitaSstepanov/templates/golang/internal/controller/http/v1"
 	"github.com/nikitaSstepanov/templates/golang/internal/usecase"
 	"github.com/nikitaSstepanov/templates/golang/internal/usecase/storage"
+	"github.com/nikitaSstepanov/templates/golang/pkg/swagger"
 	"github.com/nikitaSstepanov/tools/client/pg"
 	rs "github.com/nikitaSstepanov/tools/client/redis"
 	e "github.com/nikitaSstepanov/tools/error"
@@ -53,7 +54,7 @@ func New() *App {
 		logger.Info("Connect to redis succesfully")
 	}
 
-	setSwaggerConfig(cfg.Swagger)
+	swagger.SetSwaggerConfig(cfg.Swagger)
 
 	app := &App{}
 
