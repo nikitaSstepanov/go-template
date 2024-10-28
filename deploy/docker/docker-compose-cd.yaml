@@ -1,0 +1,87 @@
+
+services:
+    postgres:
+        container_name: postgres
+        image: postgres:15-alpine
+        environment:
+            POSTGRES_USER: "admin"
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U admin -d postgres"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 10s
+        volumes:
+            - ./volumes/pgdata:/var/lib/postgresql/data
+        networks:
+            - internal
+
+    redis:
+        container_name: redis
+        image: redis:alpine
+        environment:
+            REDIS_PASSWORD: ${REDIS_PASSWORD}
+            REDIS_USER: "admin"
+            REDIS_USER_PASSWORD: ${REDIS_USER_PASSWORD}
+            REDIS_DATABASES: 1
+        healthcheck:
+            test: ["CMD", "redis-cli", "--raw", "$REDIS_PASSWORD", "ping"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 10s
+        volumes:
+            - ./volumes/rsdata:/data
+        networks:
+            - internal
+
+    app:
+        container_name: app
+        image: ${APP_IMAGE}
+        environment:
+            CONFIG_PATH: "config/docker.yaml"
+        depends_on:
+            postgres:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+        healthcheck:
+            test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/ping"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 10s
+        networks:
+            - internal
+            - external
+
+    nginx:
+        container_name: nginx
+        image: nginx:stable-alpine
+        working_dir: /app
+        depends_on:
+            app:
+                condition: service_healthy
+        healthcheck:
+            test: ["CMD-SHELL", "wget", "-O", "/dev/null", "http://localhost/ping"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 10s
+        networks:
+            - external
+        volumes:
+            - ../nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+        links:
+            - app
+        ports:
+            - 80:80
+
+volumes:
+    pgdata:
+    rsdata:
+
+networks:
+  internal:
+  external:

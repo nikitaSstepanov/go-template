@@ -1,0 +1,98 @@
+name: Docker CI/CD
+
+on:
+  push:
+    branches: [main]
+
+env:
+  ENABLE: false
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    if: ${{ env.ENABLE }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.22.1
+
+      - name: Verify dependencies
+        run: go mod verify
+
+      - name: Build
+        run: go build -v ./...
+
+      - name: Run go vet
+        run: go vet ./...
+
+      - name: Run tests
+        run: go test -race -vet=off ./...
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    if: ${{ env.ENABLE }}
+    needs: test
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3.0.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+            
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5.3.0
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+      
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    if: ${{ env.ENABLE }}
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        env:
+          GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          fetch-depth: 0
+
+      - name: Install ssh keys
+        run: |
+          install -m 600 -D /dev/null ~/.ssh/id_ed25519
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
+
+      - name: Docker Compose
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} ${{ env.REGISTRY }}
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} docker compose -f ./go-template/deploy/docker/cd.compose.yaml --env-file ./go-template/.env pull
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} docker compose -f ./go-template/deploy/docker/cd.compose.yaml --env-file ./go-template/.env up -d --no-deps app
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} docker image prune -f
+      
+      - name: Cleanup
+        run: rm -rf ~/.ssh

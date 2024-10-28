@@ -1,0 +1,10 @@
+postgresql:
+  replicaCount: 3
+  username: "admin"
+  database: "postgres"
+  repmgrUsername: "repmgr"
+  repmgrDatabase: "repmgr"
+  existingSecret: "secret-postgres"
+
+witness:
+  create: true
