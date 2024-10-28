@@ -233,6 +233,8 @@ paths:
           description: Something going wrong...
           schema:
             $ref: '#/definitions/dto.JsonError'
+      security:
+      - Bearer: []
       summary: Delete user account
       tags:
       - account
@@ -404,4 +406,9 @@ paths:
       summary: Resend verification code
       tags:
       - account
+securityDefinitions:
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

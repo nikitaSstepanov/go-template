@@ -190,6 +190,11 @@ const docTemplate = `{
         },
         "/account/delete": {
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Deletes a user account by ID.",
                 "consumes": [
                     "application/json"
@@ -629,6 +634,13 @@ const docTemplate = `{
                     "minLength": 8
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`

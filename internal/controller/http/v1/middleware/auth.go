@@ -34,6 +34,10 @@ func (m *Middleware) CheckAccess(roles ...string) gin.HandlerFunc {
 		}
 
 		parts := strings.Split(header, " ")
+		if len(parts) < 2 {
+			dto.AbortErrMsg(ctx, bearerErr)
+			return
+		}
 		bearer := parts[0]
 		token := parts[1]
 
