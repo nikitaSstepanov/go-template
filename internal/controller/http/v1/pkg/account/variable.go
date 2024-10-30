@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/nikitaSstepanov/templates/golang/internal/controller/http/v1/dto"
+	resp "github.com/nikitaSstepanov/templates/golang/internal/controller/response"
 	"github.com/nikitaSstepanov/templates/golang/internal/entity"
 	e "github.com/nikitaSstepanov/tools/error"
 )
@@ -24,9 +24,9 @@ const (
 var (
 	badReqErr = e.New("Incorrect data.", e.BadInput)
 
-	updatedMsg  = dto.NewMessage("Updated.")
-	verifiedMsg = dto.NewMessage("Verified.")
-	okMsg       = dto.NewMessage("Ok.")
+	verifiedMsg = resp.NewMessage("Verified.")
+	updatedMsg  = resp.NewMessage("Updated.")
+	okMsg       = resp.NewMessage("Ok.")
 )
 
 type AccountUseCase interface {

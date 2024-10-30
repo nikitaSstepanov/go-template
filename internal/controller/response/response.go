@@ -1,4 +1,4 @@
-package dto
+package resp
 
 import (
 	"github.com/gin-gonic/gin"

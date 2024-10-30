@@ -5,6 +5,7 @@ import (
 	conv "github.com/nikitaSstepanov/templates/golang/internal/controller/http/v1/converter"
 	"github.com/nikitaSstepanov/templates/golang/internal/controller/http/v1/dto"
 	"github.com/nikitaSstepanov/templates/golang/internal/controller/http/v1/validator"
+	resp "github.com/nikitaSstepanov/templates/golang/internal/controller/response"
 )
 
 type Account struct {
@@ -32,7 +33,7 @@ func (a *Account) Get(c *gin.Context) {
 
 	user, err := a.usecase.Get(c, userId)
 	if err != nil {
-		dto.AbortErrMsg(c, err)
+		resp.AbortErrMsg(c, err)
 		return
 	}
 
@@ -58,12 +59,12 @@ func (a *Account) Create(c *gin.Context) {
 	var body dto.CreateUser
 
 	if err := c.ShouldBindJSON(&body); err != nil {
-		dto.AbortErrMsg(c, badReqErr.WithErr(err))
+		resp.AbortErrMsg(c, badReqErr.WithErr(err))
 		return
 	}
 
 	if err := validator.Struct(body, validator.Password); err != nil {
-		dto.AbortErrMsg(c, err)
+		resp.AbortErrMsg(c, err)
 		return
 	}
 
@@ -71,7 +72,7 @@ func (a *Account) Create(c *gin.Context) {
 
 	tokens, err := a.usecase.Create(c, user)
 	if err != nil {
-		dto.AbortErrMsg(c, err)
+		resp.AbortErrMsg(c, err)
 		return
 	}
 
@@ -104,12 +105,12 @@ func (a *Account) Update(c *gin.Context) {
 	var body dto.UpdateUser
 
 	if err := c.ShouldBindJSON(&body); err != nil {
-		dto.AbortErrMsg(c, badReqErr.WithErr(err))
+		resp.AbortErrMsg(c, badReqErr.WithErr(err))
 		return
 	}
 
 	if err := validator.Struct(body, validator.Password); err != nil {
-		dto.AbortErrMsg(c, err)
+		resp.AbortErrMsg(c, err)
 		return
 	}
 
@@ -118,7 +119,7 @@ func (a *Account) Update(c *gin.Context) {
 
 	err := a.usecase.Update(c, user, body.OldPassword)
 	if err != nil {
-		dto.AbortErrMsg(c, err)
+		resp.AbortErrMsg(c, err)
 		return
 	}
 
@@ -145,13 +146,13 @@ func (a *Account) Verify(c *gin.Context) {
 	code := c.Param("code")
 
 	if err := validator.StringLength(code, 6, 6); err != nil {
-		dto.AbortErrMsg(c, err)
+		resp.AbortErrMsg(c, err)
 		return
 	}
 
 	err := a.usecase.Verify(c, userId, code)
 	if err != nil {
-		dto.AbortErrMsg(c, err)
+		resp.AbortErrMsg(c, err)
 		return
 	}
 
@@ -176,7 +177,7 @@ func (a *Account) ResendCode(c *gin.Context) {
 
 	err := a.usecase.ResendCode(c, userId)
 	if err != nil {
-		dto.AbortErrMsg(c, err)
+		resp.AbortErrMsg(c, err)
 		return
 	}
 
@@ -202,12 +203,12 @@ func (a *Account) Delete(c *gin.Context) {
 	var body dto.DeleteUser
 
 	if err := c.ShouldBindJSON(&body); err != nil {
-		dto.AbortErrMsg(c, badReqErr.WithErr(err))
+		resp.AbortErrMsg(c, badReqErr.WithErr(err))
 		return
 	}
 
 	if err := validator.Struct(body, validator.Password); err != nil {
-		dto.AbortErrMsg(c, err)
+		resp.AbortErrMsg(c, err)
 		return
 	}
 
@@ -216,7 +217,7 @@ func (a *Account) Delete(c *gin.Context) {
 
 	err := a.usecase.Delete(c, user)
 	if err != nil {
-		dto.AbortErrMsg(c, err)
+		resp.AbortErrMsg(c, err)
 		return
 	}
 

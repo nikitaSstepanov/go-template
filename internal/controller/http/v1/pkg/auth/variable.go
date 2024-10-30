@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/nikitaSstepanov/templates/golang/internal/controller/http/v1/dto"
+	resp "github.com/nikitaSstepanov/templates/golang/internal/controller/response"
 	"github.com/nikitaSstepanov/templates/golang/internal/entity"
 	e "github.com/nikitaSstepanov/tools/error"
 )
@@ -25,7 +25,7 @@ const (
 var (
 	badReqErr = e.New("Incorrect data.", e.BadInput)
 
-	logoutMsg = dto.NewMessage("Logout success.")
+	logoutMsg = resp.NewMessage("Logout success.")
 )
 
 type AuthUseCase interface {

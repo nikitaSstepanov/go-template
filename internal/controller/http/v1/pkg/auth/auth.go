@@ -5,6 +5,7 @@ import (
 	conv "github.com/nikitaSstepanov/templates/golang/internal/controller/http/v1/converter"
 	"github.com/nikitaSstepanov/templates/golang/internal/controller/http/v1/dto"
 	"github.com/nikitaSstepanov/templates/golang/internal/controller/http/v1/validator"
+	resp "github.com/nikitaSstepanov/templates/golang/internal/controller/response"
 )
 
 type Auth struct {
@@ -33,12 +34,12 @@ func (a *Auth) Login(c *gin.Context) {
 	var body dto.Login
 
 	if err := c.ShouldBindJSON(&body); err != nil {
-		dto.AbortErrMsg(c, badReqErr.WithErr(err))
+		resp.AbortErrMsg(c, badReqErr.WithErr(err))
 		return
 	}
 
 	if err := validator.Struct(body, validator.Password); err != nil {
-		dto.AbortErrMsg(c, err)
+		resp.AbortErrMsg(c, err)
 		return
 	}
 
@@ -46,7 +47,7 @@ func (a *Auth) Login(c *gin.Context) {
 
 	tokens, err := a.usecase.Login(c, user)
 	if err != nil {
-		dto.AbortErrMsg(c, err)
+		resp.AbortErrMsg(c, err)
 		return
 	}
 
@@ -71,7 +72,7 @@ func (a *Auth) Logout(c *gin.Context) {
 
 	err := a.usecase.Logout(c, userId)
 	if err != nil {
-		dto.AbortErrMsg(c, err)
+		resp.AbortErrMsg(c, err)
 		return
 	}
 
@@ -93,13 +94,13 @@ func (a *Auth) Logout(c *gin.Context) {
 func (a *Auth) Refresh(c *gin.Context) {
 	refresh, cookieErr := c.Cookie(cookieName)
 	if cookieErr != nil {
-		dto.AbortErrMsg(c, badReqErr.WithErr(cookieErr))
+		resp.AbortErrMsg(c, badReqErr.WithErr(cookieErr))
 		return
 	}
 
 	tokens, err := a.usecase.Refresh(c, refresh)
 	if err != nil {
-		dto.AbortErrMsg(c, err)
+		resp.AbortErrMsg(c, err)
 		return
 	}
 
