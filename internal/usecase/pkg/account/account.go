@@ -6,6 +6,7 @@ import (
 	"github.com/nikitaSstepanov/templates/golang/internal/entity"
 	"github.com/nikitaSstepanov/templates/golang/pkg/utils/generator"
 	e "github.com/nikitaSstepanov/tools/error"
+	"github.com/nikitaSstepanov/tools/sl"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -53,10 +54,7 @@ func (a *Account) Create(ctx context.Context, user *entity.User) (*entity.Tokens
 		return nil, err
 	}
 
-	err = a.sendCode(ctx, user)
-	if err != nil {
-		return nil, err
-	}
+	go a.sendCode(ctx, user)
 
 	var tokens entity.Tokens
 
@@ -104,10 +102,8 @@ func (a *Account) Update(ctx context.Context, user *entity.User, pass string) e.
 			return err
 		}
 
-		err = a.sendCode(ctx, user)
-		if err != nil {
-			return err
-		}
+		go a.sendCode(ctx, user)
+
 	}
 
 	if user.Password != "" {
@@ -160,7 +156,9 @@ func (a *Account) ResendCode(ctx context.Context, userId uint64) e.Error {
 		return err
 	}
 
-	return a.sendCode(ctx, user)
+	go a.sendCode(ctx, user)
+
+	return nil
 }
 
 func (a *Account) Delete(ctx context.Context, user *entity.User) e.Error {
@@ -176,16 +174,19 @@ func (a *Account) Delete(ctx context.Context, user *entity.User) e.Error {
 	return a.user.Delete(ctx, user)
 }
 
-func (a *Account) sendCode(ctx context.Context, user *entity.User) e.Error {
+func (a *Account) sendCode(ctx context.Context, user *entity.User) {
+	log := sl.L(ctx)
 	_, err := a.code.Get(ctx, user.Id)
 	if err != nil && err.GetCode() != e.NotFound {
-		return err
+		log.Error("Failed to get code from CodeStorage", err.SlErr())
+
 	}
 
 	if err == nil {
 		err = a.code.Del(ctx, user.Id)
 		if err != nil {
-			return err
+			log.Error("Failed to delete code from CodeStorage", err.SlErr())
+
 		}
 	}
 
@@ -193,7 +194,8 @@ func (a *Account) sendCode(ctx context.Context, user *entity.User) e.Error {
 
 	err = a.mail.SendActivation(user.Email, code)
 	if err != nil {
-		return err
+		log.Error("Failed to send code with smtp", err.SlErr())
+
 	}
 
 	acode := &entity.ActivationCode{
@@ -203,10 +205,9 @@ func (a *Account) sendCode(ctx context.Context, user *entity.User) e.Error {
 
 	err = a.code.Set(ctx, acode)
 	if err != nil {
-		return err
-	}
+		log.Error("Failed to set code in CodeStorage", err.SlErr())
 
-	return nil
+	}
 }
 
 func checkPassword(hash string, password string) error {

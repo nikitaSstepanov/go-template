@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"math/rand/v2"
 	"net/http"
 	"net/url"
 	"testing"
@@ -21,14 +20,8 @@ func TestLogin(t *testing.T) {
 	}
 
 	e := httpexpect.Default(t, u.String())
-	user := dto.CreateUser{
-		Email:    genRandEmail(),
-		Name:     gofakeit.Name(),
-		Age:      rand.IntN(100),
-		Password: gofakeit.Password(true, true, true, true, false, 10),
-	}
 
-	e.POST("/new").WithJSON(user).Expect().Status(http.StatusOK)
+	user, _ := createUser(e)
 
 	tests := []struct {
 		TestName string
