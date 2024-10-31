@@ -106,11 +106,10 @@ func TestEditAccount(t *testing.T) {
 
 		//TODO: Add more test cases
 	}
-
+	
 	for _, tc := range tests {
 		t.Run(tc.TestName, func(t *testing.T) {
 			t.Parallel()
-
 			obj := e.PATCH("/edit").WithHeader("Authorization", tc.Token).WithJSON(dto.UpdateUser{
 				Email:       tc.Email,
 				Name:        tc.Name,

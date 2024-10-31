@@ -84,7 +84,6 @@ func TestCreate(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.TestName, func(t *testing.T) {
 			t.Parallel()
-
 			obj := e.POST("/new").WithJSON(dto.CreateUser{
 				Email:    tc.Email,
 				Name:     tc.Name,
