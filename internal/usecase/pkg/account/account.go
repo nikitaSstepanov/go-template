@@ -179,7 +179,6 @@ func (a *Account) sendCode(ctx context.Context, user *entity.User) {
 	_, err := a.code.Get(ctx, user.Id)
 	if err != nil && err.GetCode() != e.NotFound {
 		log.Error("Failed to get code from CodeStorage", err.SlErr())
-
 	}
 
 	if err == nil {
@@ -195,7 +194,6 @@ func (a *Account) sendCode(ctx context.Context, user *entity.User) {
 	err = a.mail.SendActivation(user.Email, code)
 	if err != nil {
 		log.Error("Failed to send code with smtp", err.SlErr())
-
 	}
 
 	acode := &entity.ActivationCode{
@@ -206,7 +204,6 @@ func (a *Account) sendCode(ctx context.Context, user *entity.User) {
 	err = a.code.Set(ctx, acode)
 	if err != nil {
 		log.Error("Failed to set code in CodeStorage", err.SlErr())
-
 	}
 }
 

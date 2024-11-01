@@ -11,7 +11,6 @@ import (
 )
 
 func TestLogin(t *testing.T) {
-	t.Parallel()
 
 	u := url.URL{
 		Scheme: "http",
@@ -55,7 +54,6 @@ func TestLogin(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.TestName, func(t *testing.T) {
-			t.Parallel()
 			obj := e.POST("/auth/login").WithJSON(dto.Login{
 				Email:    tc.Email,
 				Password: tc.Password,

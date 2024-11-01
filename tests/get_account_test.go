@@ -13,7 +13,6 @@ import (
 )
 
 func TestGetAccount(t *testing.T) {
-	t.Parallel()
 
 	u := url.URL{
 		Scheme: "http",
@@ -61,7 +60,6 @@ func TestGetAccount(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.TestName, func(t *testing.T) {
-			t.Parallel()
 			if tc.IsError {
 				if tc.WithoutHeader {
 					e.GET("/").Expect().Status(tc.Status).JSON().Object().ContainsKey("error")

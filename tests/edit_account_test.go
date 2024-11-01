@@ -13,7 +13,6 @@ import (
 )
 
 func TestEditAccount(t *testing.T) {
-	t.Parallel()
 
 	u := url.URL{
 		Scheme: "http",
@@ -37,22 +36,6 @@ func TestEditAccount(t *testing.T) {
 		IsError     bool
 	}{
 		{
-			TestName:    "Success",
-			Email:       genRandEmail(),
-			Name:        gofakeit.Name(),
-			Age:         rand.IntN(100),
-			Token:       fmt.Sprintf("Bearer %s", token),
-			OldPassword: user.Password,
-			Password:    gofakeit.Password(true, true, true, true, false, 10),
-			Status:      http.StatusOK,
-		},
-		{
-			TestName: "Empty fields",
-			Email:    genRandEmail(),
-			Token:    fmt.Sprintf("Bearer %s", token),
-			Status:   http.StatusOK,
-		},
-		{
 			TestName: "Invalid Password",
 			Email:    genRandEmail(),
 			Name:     gofakeit.Name(),
@@ -74,7 +57,7 @@ func TestEditAccount(t *testing.T) {
 		},
 		{
 			TestName: "Invalid Email",
-			Email:    "adhfianfgdg",
+			Email:    "adhfianfdfgdg",
 			Name:     gofakeit.Name(),
 			Age:      rand.IntN(100),
 			Token:    fmt.Sprintf("Bearer %s", token),
@@ -103,13 +86,27 @@ func TestEditAccount(t *testing.T) {
 			Status:      http.StatusForbidden,
 			IsError:     true,
 		},
-
+		{
+			TestName:    "Success",
+			Email:       genRandEmail(),
+			Name:        gofakeit.Name(),
+			Age:         rand.IntN(100),
+			Token:       fmt.Sprintf("Bearer %s", token),
+			OldPassword: user.Password,
+			Password:    gofakeit.Password(true, true, true, true, false, 10),
+			Status:      http.StatusOK,
+		},
+		{
+			TestName: "Empty fields",
+			Email:    genRandEmail(),
+			Token:    fmt.Sprintf("Bearer %s", token),
+			Status:   http.StatusOK,
+		},
 		//TODO: Add more test cases
 	}
-	
+
 	for _, tc := range tests {
 		t.Run(tc.TestName, func(t *testing.T) {
-			t.Parallel()
 			obj := e.PATCH("/edit").WithHeader("Authorization", tc.Token).WithJSON(dto.UpdateUser{
 				Email:       tc.Email,
 				Name:        tc.Name,

@@ -10,7 +10,6 @@ import (
 )
 
 func TestLogoutAccount(t *testing.T) {
-	t.Parallel()
 
 	u := url.URL{
 		Scheme: "http",

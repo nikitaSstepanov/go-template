@@ -12,8 +12,6 @@ import (
 )
 
 func TestDeleteAccount(t *testing.T) {
-	t.Parallel()
-
 	u := url.URL{
 		Scheme: "http",
 		Host:   host,
@@ -33,12 +31,6 @@ func TestDeleteAccount(t *testing.T) {
 		IsError       bool
 	}{
 		{
-			TestName: "Success",
-			Token:    fmt.Sprintf("Bearer %s", token),
-			Password: user.Password,
-			Status:   http.StatusOK,
-		},
-		{
 			TestName:      "No Authorization header",
 			WithoutHeader: true,
 			Password:      user.Password,
@@ -54,7 +46,7 @@ func TestDeleteAccount(t *testing.T) {
 		},
 		{
 			TestName: "Invalid token",
-			Token:    fmt.Sprintf("Bearer %s", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"),
+			Token:    fmt.Sprintf("Bearer %s", "eyJhbGdeiOiJRUzI1NiIsInR5cCI6IkpXVCJ9"),
 			Password: user.Password,
 			Status:   http.StatusUnauthorized,
 			IsError:  true,
@@ -66,13 +58,18 @@ func TestDeleteAccount(t *testing.T) {
 			Status:   http.StatusForbidden,
 			IsError:  true,
 		},
+		{
+			TestName: "Success",
+			Token:    fmt.Sprintf("Bearer %s", token),
+			Password: user.Password,
+			Status:   http.StatusOK,
+		},
 
 		//TODO: Add more test cases
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.TestName, func(t *testing.T) {
-			t.Parallel()
 			if tc.IsError {
 				if tc.WithoutHeader {
 					e.DELETE("/delete").Expect().Status(tc.Status).JSON().Object().ContainsKey("error")

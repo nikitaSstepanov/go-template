@@ -23,7 +23,6 @@ func genRandEmail() string {
 }
 
 func TestCreate(t *testing.T) {
-	t.Parallel()
 
 	u := url.URL{
 		Scheme: "http",
@@ -70,7 +69,7 @@ func TestCreate(t *testing.T) {
 		},
 		{
 			TestName: "Invalid Email",
-			Email:    "adhfianfgdg",
+			Email:    "adhfiaasaassdanfgdg",
 			Name:     gofakeit.Name(),
 			Age:      rand.IntN(100),
 			Password: gofakeit.Password(true, true, true, true, false, 10),
@@ -83,7 +82,6 @@ func TestCreate(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.TestName, func(t *testing.T) {
-			t.Parallel()
 			obj := e.POST("/new").WithJSON(dto.CreateUser{
 				Email:    tc.Email,
 				Name:     tc.Name,
