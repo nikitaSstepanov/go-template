@@ -191,11 +191,6 @@ func (a *Account) sendCode(ctx context.Context, user *entity.User) {
 
 	code := generator.GetRandomNum(codeLength)
 
-	err = a.mail.SendActivation(user.Email, code)
-	if err != nil {
-		log.Error("Failed to send code with smtp", err.SlErr())
-	}
-
 	acode := &entity.ActivationCode{
 		Code:   code,
 		UserId: user.Id,
@@ -204,6 +199,11 @@ func (a *Account) sendCode(ctx context.Context, user *entity.User) {
 	err = a.code.Set(ctx, acode)
 	if err != nil {
 		log.Error("Failed to set code in CodeStorage", err.SlErr())
+	}
+
+	err = a.mail.SendActivation(user.Email, code)
+	if err != nil {
+		log.Error("Failed to send code with smtp", err.SlErr())
 	}
 }
 

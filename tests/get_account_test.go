@@ -86,7 +86,7 @@ func createUser(e *httpexpect.Expect) (dto.CreateUser, string) {
 		Password: gofakeit.Password(true, true, true, true, false, 10),
 	}
 
-	val := e.POST("/new").WithJSON(user).Expect().Status(http.StatusOK).JSON().Object().Iter()["token"]
+	val := e.POST("/new").WithJSON(user).Expect().Status(http.StatusOK).JSON().Object().Value("token")
 	token := val.String().Raw()
 	return user, token
 }

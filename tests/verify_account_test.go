@@ -1,0 +1,140 @@
+package tests
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+	"net/url"
+	"strconv"
+	"testing"
+
+	"github.com/brianvoe/gofakeit"
+	"github.com/gavv/httpexpect/v2"
+	"github.com/ilyakaznacheev/cleanenv"
+	"github.com/nikitaSstepanov/templates/golang/internal/usecase/storage/activation_code"
+	"github.com/nikitaSstepanov/templates/golang/internal/usecase/storage/user"
+	"github.com/nikitaSstepanov/tools/client/pg"
+	"github.com/nikitaSstepanov/tools/client/redis"
+	"github.com/nikitaSstepanov/tools/sl"
+)
+
+func TestVerifyAccount(t *testing.T) {
+	u := url.URL{
+		Scheme: "http",
+		Host:   host,
+		Path:   "/api/v1/account",
+	}
+	ctx := context.TODO()
+	e := httpexpect.Default(t, u.String())
+
+	account, token := createUser(e)
+
+	Rclient := connectToRedis(t)
+	Pclient := connectToPostgres(t)
+
+	storage := user.New(Pclient, Rclient)
+	codeStorage := activation_code.New(Rclient)
+
+	UserData, err := storage.GetByEmail(ctx, account.Email)
+	if err != nil {
+		t.Fatal("Faled to get user data from storage", err.SlErr())
+	}
+
+	code, err := codeStorage.Get(ctx, UserData.Id)
+	if err != nil {
+		t.Fatal("Faled to get activation code from storage", err.SlErr())
+	}
+
+	tests := []struct {
+		TestName      string
+		Token         string
+		WithoutHeader bool
+		Code          string
+		Status        int
+		IsError       bool
+	}{
+		{
+			TestName: "Success",
+			Token:    fmt.Sprintf("Bearer %s", token),
+			Code:     code.Code,
+			Status:   http.StatusOK,
+		},
+		{
+			TestName: "Invalid code",
+			Token:    fmt.Sprintf("Bearer %s", token),
+			Code:     strconv.Itoa(int(gofakeit.Uint16())),
+			Status:   http.StatusBadRequest,
+			IsError:  true,
+		},
+		{
+			TestName:      "Without authorization header",
+			Code:          code.Code,
+			Status:        http.StatusUnauthorized,
+			IsError:       true,
+			WithoutHeader: true,
+		},
+		{
+			TestName: "Invalid token",
+			Token:    fmt.Sprintf("Bearer %s", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"),
+			Code:     code.Code,
+			Status:   http.StatusUnauthorized,
+			IsError:  true,
+		},
+
+		//TODO: Add more test cases
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.TestName, func(t *testing.T) {
+			if tc.IsError {
+				if tc.WithoutHeader {
+					e.GET(fmt.Sprintf("/verify/confirm/%s", tc.Code)).
+						Expect().Status(tc.Status).JSON().
+						Object().ContainsKey("error")
+				} else {
+					e.GET(fmt.Sprintf("/verify/confirm/%s", tc.Code)).
+						WithHeader("Authorization", tc.Token).
+						Expect().Status(tc.Status).JSON().
+						Object().ContainsKey("error")
+				}
+			} else {
+				e.GET(fmt.Sprintf("/verify/confirm/%s", tc.Code)).
+					WithHeader("Authorization", tc.Token).Expect().Status(tc.Status).
+					JSON().
+					Object().ContainsKey("message")
+			}
+		})
+	}
+}
+
+func connectToPostgres(t *testing.T) pg.Client {
+	var cfg TestConfig
+	path := getConfigPath()
+
+	if err := cleanenv.ReadConfig(path, &cfg); err != nil {
+		t.Fatal("Failed to read test config", sl.ErrAttr(err))
+	}
+
+	client, err := pg.ConnectToDb(context.TODO(), &cfg.Postgres)
+	if err != nil {
+		t.Fatal("Failed to connect to postgres", sl.ErrAttr(err))
+	}
+
+	return client
+}
+
+func connectToRedis(t *testing.T) redis.Client {
+	var cfg TestConfig
+	path := getConfigPath()
+
+	if err := cleanenv.ReadConfig(path, &cfg); err != nil {
+		t.Fatal("Failed to read test config", sl.ErrAttr(err))
+	}
+
+	client, err := redis.ConnectToRedis(context.TODO(), &cfg.Redis)
+	if err != nil {
+		t.Fatal("Failed to connect to redis", sl.ErrAttr(err))
+	}
+
+	return client
+}
