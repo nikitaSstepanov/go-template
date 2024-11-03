@@ -3,7 +3,6 @@ package tests
 import (
 	"fmt"
 	"net/http"
-	"net/url"
 	"testing"
 
 	"github.com/brianvoe/gofakeit"
@@ -12,13 +11,8 @@ import (
 )
 
 func TestDeleteAccount(t *testing.T) {
-	u := url.URL{
-		Scheme: "http",
-		Host:   host,
-		Path:   "/api/v1/account",
-	}
-
-	e := httpexpect.Default(t, u.String())
+	url := testCfg.ToURL()
+	e := httpexpect.Default(t, url)
 
 	user, token := createUser(e)
 

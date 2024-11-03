@@ -3,17 +3,12 @@ package tests
 import (
 	"math/rand/v2"
 	"net/http"
-	"net/url"
 	"strings"
 	"testing"
 
 	"github.com/brianvoe/gofakeit"
 	"github.com/gavv/httpexpect/v2"
 	"github.com/nikitaSstepanov/templates/golang/internal/controller/http/v1/dto"
-)
-
-const (
-	host = "localhost:8080"
 )
 
 func genRandEmail() string {
@@ -23,14 +18,8 @@ func genRandEmail() string {
 }
 
 func TestCreate(t *testing.T) {
-
-	u := url.URL{
-		Scheme: "http",
-		Host:   host,
-		Path:   "/api/v1/account",
-	}
-
-	e := httpexpect.Default(t, u.String())
+	url := testCfg.ToURL()
+	e := httpexpect.Default(t, url)
 
 	tests := []struct {
 		TestName string

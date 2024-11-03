@@ -4,13 +4,11 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
 	"testing"
 
 	"github.com/brianvoe/gofakeit"
 	"github.com/gavv/httpexpect/v2"
-	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/nikitaSstepanov/templates/golang/internal/usecase/storage/activation_code"
 	"github.com/nikitaSstepanov/templates/golang/internal/usecase/storage/user"
 	"github.com/nikitaSstepanov/tools/client/pg"
@@ -19,13 +17,10 @@ import (
 )
 
 func TestVerifyAccount(t *testing.T) {
-	u := url.URL{
-		Scheme: "http",
-		Host:   host,
-		Path:   "/api/v1/account",
-	}
+	url := testCfg.ToURL()
+	e := httpexpect.Default(t, url)
+
 	ctx := context.TODO()
-	e := httpexpect.Default(t, u.String())
 
 	account, token := createUser(e)
 
@@ -108,14 +103,7 @@ func TestVerifyAccount(t *testing.T) {
 }
 
 func connectToPostgres(t *testing.T) pg.Client {
-	var cfg TestConfig
-	path := getConfigPath()
-
-	if err := cleanenv.ReadConfig(path, &cfg); err != nil {
-		t.Fatal("Failed to read test config", sl.ErrAttr(err))
-	}
-
-	client, err := pg.ConnectToDb(context.TODO(), &cfg.Postgres)
+	client, err := pg.ConnectToDb(context.TODO(), &testCfg.Postgres)
 	if err != nil {
 		t.Fatal("Failed to connect to postgres", sl.ErrAttr(err))
 	}
@@ -124,14 +112,7 @@ func connectToPostgres(t *testing.T) pg.Client {
 }
 
 func connectToRedis(t *testing.T) redis.Client {
-	var cfg TestConfig
-	path := getConfigPath()
-
-	if err := cleanenv.ReadConfig(path, &cfg); err != nil {
-		t.Fatal("Failed to read test config", sl.ErrAttr(err))
-	}
-
-	client, err := redis.ConnectToRedis(context.TODO(), &cfg.Redis)
+	client, err := redis.ConnectToRedis(context.TODO(), &testCfg.Redis)
 	if err != nil {
 		t.Fatal("Failed to connect to redis", sl.ErrAttr(err))
 	}

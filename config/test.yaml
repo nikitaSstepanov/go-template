@@ -1,3 +1,9 @@
+server:
+  host: "localhost"
+  port: "8080"
+  path: "/api/v1/account"
+  scheme: "http"
+
 redis:
   user: "admin"
   host: "localhost"
@@ -11,6 +17,3 @@ postgres:
   dbname: "postgres"
   sslmode: "disable"
 
-server:
-  host: "localhost"
-  port: 8080

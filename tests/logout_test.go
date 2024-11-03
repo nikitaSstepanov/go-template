@@ -3,21 +3,14 @@ package tests
 import (
 	"fmt"
 	"net/http"
-	"net/url"
 	"testing"
 
 	"github.com/gavv/httpexpect/v2"
 )
 
 func TestLogoutAccount(t *testing.T) {
-
-	u := url.URL{
-		Scheme: "http",
-		Host:   host,
-		Path:   "/api/v1/account",
-	}
-
-	e := httpexpect.Default(t, u.String())
+	url := testCfg.ToURL()
+	e := httpexpect.Default(t, url)
 
 	_, token := createUser(e)
 
