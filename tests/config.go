@@ -6,17 +6,13 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/gosuit/pg"
-	"github.com/gosuit/rs"
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
 var testCfg = newTestConf()
 
 type TestConfig struct {
-	Server   Server    `yaml:"server"`
-	Postgres pg.Config `yaml:"postgres"`
-	Redis    rs.Config `yaml:"redis"`
+	Server Server `yaml:"server"`
 }
 
 func (cfg *TestConfig) ToURL() string {

@@ -4,29 +4,6 @@ server:
   writeTimeout: 5s
   shutdownTimeout: 5s
 
-postgres:
-  username: "admin"
-  host: "localhost"
-  port: 5432
-  dbname: "postgres"
-  sslmode: "disable"
-
-redis:
-  user: "admin"
-  host: "localhost"
-  port: 6379
-  db: 0
-
-mail:
-  host: ""
-  port: 0
-  username: ""
-  identity: ""
-
-jwt:
-  issuer: "app"
-  audience: ["clients"]
-
 logger:
   type: "dev"
   level: "debug"
@@ -34,13 +11,39 @@ logger:
   is_json: true
   set_default: true
 
-swagger:
-  version: "1.0"
-  base_path: "/api/v1/"
-  host: "localhost:8080"
-  schemes:
-    - "http"
-  title: "Template of API"
-  description: "This is the API documentation for template API."
+controller:
+  mode: "DEBUG"
+  v1:
+    swagger:
+      version: "1.0"
+      base_path: "/api/v1/"
+      host: "localhost:8080"
+      schemes:
+        - "http"
+      title: "Template of API"
+      description: "This is the API documentation for API template."
 
-mode: "DEBUG"
+usecase:
+  mail:
+    host: ""
+    port: 0
+    username: ""
+    identity: ""
+
+  jwt:
+    issuer: "app"
+    audience: ["clients"]
+
+storage:
+  postgres:
+    username: "admin"
+    host: "localhost"
+    port: 5432
+    dbname: "postgres"
+    sslmode: "disable"
+
+  redis:
+    user: "admin"
+    host: "localhost"
+    port: 6379
+    db: 0
