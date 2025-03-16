@@ -30,9 +30,10 @@ func New(uc AccountUseCase) *Account {
 // @Failure 500 {object} dto.JsonError "Something going wrong..."
 // @Router /account/ [get]
 func (a *Account) Get(c *gin.Context) {
+	ctx := gins.GetCtx(c)
 	userId := c.GetUint64("userId")
 
-	user, err := a.usecase.Get(c, userId)
+	user, err := a.usecase.Get(ctx, userId)
 	if err != nil {
 		gins.Abort(c, err)
 		return
@@ -57,6 +58,7 @@ func (a *Account) Get(c *gin.Context) {
 // @Failure 500 {object} dto.JsonError "Something going wrong..."
 // @Router /account/new [post]
 func (a *Account) Create(c *gin.Context) {
+	ctx := gins.GetCtx(c)
 	var body dto.CreateUser
 
 	if err := c.ShouldBindJSON(&body); err != nil {
@@ -71,7 +73,7 @@ func (a *Account) Create(c *gin.Context) {
 
 	user := conv.EntityCreate(body)
 
-	tokens, err := a.usecase.Create(c, user)
+	tokens, err := a.usecase.Create(ctx, user)
 	if err != nil {
 		gins.Abort(c, err)
 		return
@@ -101,6 +103,7 @@ func (a *Account) Create(c *gin.Context) {
 // @Failure 500 {object} dto.JsonError "Something going wrong..."
 // @Router /account/edit [patch]
 func (a *Account) Update(c *gin.Context) {
+	ctx := gins.GetCtx(c)
 	userId := c.GetUint64("userId")
 
 	var body dto.UpdateUser
@@ -118,7 +121,7 @@ func (a *Account) Update(c *gin.Context) {
 	user := conv.EntityUpdate(body)
 	user.Id = userId
 
-	err := a.usecase.Update(c, user, body.OldPassword)
+	err := a.usecase.Update(ctx, user, body.OldPassword)
 	if err != nil {
 		gins.Abort(c, err)
 		return
@@ -142,6 +145,7 @@ func (a *Account) Update(c *gin.Context) {
 // @Failure 500 {object} dto.JsonError "Something going wrong..."
 // @Router /account/verify/confirm/{code} [get]
 func (a *Account) Verify(c *gin.Context) {
+	ctx := gins.GetCtx(c)
 	userId := c.GetUint64("userId")
 
 	code := c.Param("code")
@@ -151,7 +155,7 @@ func (a *Account) Verify(c *gin.Context) {
 		return
 	}
 
-	err := a.usecase.Verify(c, userId, code)
+	err := a.usecase.Verify(ctx, userId, code)
 	if err != nil {
 		gins.Abort(c, err)
 		return
@@ -174,9 +178,10 @@ func (a *Account) Verify(c *gin.Context) {
 // @Failure 500 {object} dto.JsonError "Something going wrong..."
 // @Router /account/verify/resend [get]
 func (a *Account) ResendCode(c *gin.Context) {
+	ctx := gins.GetCtx(c)
 	userId := c.GetUint64("userId")
 
-	err := a.usecase.ResendCode(c, userId)
+	err := a.usecase.ResendCode(ctx, userId)
 	if err != nil {
 		gins.Abort(c, err)
 		return
@@ -199,6 +204,7 @@ func (a *Account) ResendCode(c *gin.Context) {
 // @Failure 500 {object} dto.JsonError "Something going wrong..."
 // @Router /account/delete [delete]
 func (a *Account) Delete(c *gin.Context) {
+	ctx := gins.GetCtx(c)
 	userId := c.GetUint64("userId")
 
 	var body dto.DeleteUser
@@ -216,7 +222,7 @@ func (a *Account) Delete(c *gin.Context) {
 	user := conv.EntityDelete(body)
 	user.Id = userId
 
-	err := a.usecase.Delete(c, user)
+	err := a.usecase.Delete(ctx, user)
 	if err != nil {
 		gins.Abort(c, err)
 		return

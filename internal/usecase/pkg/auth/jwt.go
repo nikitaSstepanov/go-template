@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"app/internal/entity"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -42,10 +43,9 @@ func (j *Jwt) ValidateToken(jwtString string, isRefresh bool) (*Claims, e.Error)
 	return token.Claims.(*Claims), nil
 }
 
-func (j *Jwt) GenerateToken(id uint64, role string, expires time.Duration, isRefresh bool) (string, e.Error) {
+func (j *Jwt) GenerateToken(user *entity.User, expires time.Duration, isRefresh bool) (string, e.Error) {
 	c := Claims{
-		id,
-		role,
+		user.Id,
 		jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(expires)),
 			Issuer:    j.issuer,
@@ -63,7 +63,7 @@ func (j *Jwt) GenerateToken(id uint64, role string, expires time.Duration, isRef
 
 	tokenString, err := token.SignedString([]byte(key))
 	if err != nil {
-		return "", internalErr.WithErr(err)
+		return "", e.InternalErr.WithErr(err)
 	}
 
 	return tokenString, nil

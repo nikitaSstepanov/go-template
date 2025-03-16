@@ -3,11 +3,11 @@ package middleware
 import "app/internal/usecase/pkg/auth"
 
 type Middleware struct {
-	jwt JwtUseCase
+	auth AuthUseCase
 }
 
-func New(jwtOpts *auth.JwtOptions) *Middleware {
+func New(uc *auth.Auth) *Middleware {
 	return &Middleware{
-		jwt: auth.NewJwt(jwtOpts),
+		auth: uc,
 	}
 }

@@ -1,14 +1,12 @@
 package user
 
 import (
-	"context"
-
 	"app/internal/entity"
 
 	"github.com/gosuit/e"
+	"github.com/gosuit/lec"
 	"github.com/gosuit/pg"
 	"github.com/gosuit/rs"
-	"github.com/gosuit/sl"
 )
 
 type User struct {
@@ -23,115 +21,175 @@ func New(postgres pg.Client, redis rs.Client) *User {
 	}
 }
 
-func (u *User) GetById(ctx context.Context, id uint64) (*entity.User, e.Error) {
+func (u *User) GetById(ctx lec.Context, id uint64) (*entity.User, e.Error) {
 	var user entity.User
 
 	err := u.redis.Get(ctx, redisKey(id)).Scan(&user)
 	if err != nil && err != rs.Nil {
-		return nil, internalErr.WithErr(err)
+		return nil, e.InternalErr.
+			WithCtx(ctx).
+			WithErr(err)
 	}
 
 	if user.Id != 0 {
 		return &user, nil
 	}
 
-	query := idQuery(id)
+	query, args := idQuery(id)
 
-	row := u.postgres.QueryRow(ctx, query)
+	row := u.postgres.QueryRow(ctx, query, args...)
 
 	if err := user.Scan(row); err != nil {
 		if err == pg.ErrNoRows {
-			return nil, notFoundErr.WithErr(err)
+			return nil, notFoundErr.
+				WithCtx(ctx).
+				WithErr(err)
 		} else {
-			return nil, internalErr.WithErr(err)
+			return nil, e.InternalErr.
+				WithCtx(ctx).
+				WithErr(err)
 		}
 	}
 
 	err = u.redis.Set(ctx, redisKey(id), &user, redisExpires).Err()
 	if err != nil {
-		return nil, internalErr.WithErr(err)
+		return nil, e.InternalErr.
+			WithCtx(ctx).
+			WithErr(err)
 	}
 
 	return &user, nil
 }
 
-func (u *User) GetByEmail(ctx context.Context, email string) (*entity.User, e.Error) {
+func (u *User) GetByEmail(ctx lec.Context, email string) (*entity.User, e.Error) {
 	var user entity.User
 
-	query := emailQuery(email)
+	query, args := emailQuery(email)
 
-	row := u.postgres.QueryRow(ctx, query)
+	row := u.postgres.QueryRow(ctx, query, args...)
 
 	if err := user.Scan(row); err != nil {
 		if err == pg.ErrNoRows {
 			return nil, notFoundErr.WithErr(err)
 		}
 
-		return nil, internalErr.WithErr(err)
+		return nil, e.InternalErr.
+			WithCtx(ctx).
+			WithErr(err)
 	}
 
 	return &user, nil
 }
 
-func (u *User) Create(ctx context.Context, user *entity.User) e.Error {
-	log := sl.L(ctx)
-	query := createQuery(user)
+func (u *User) Create(ctx lec.Context, user *entity.User) e.Error {
+	query, args := createQuery(user)
 
 	tx, err := u.postgres.Begin(ctx)
 	if err != nil {
-		return internalErr.WithErr(err)
+		return e.InternalErr.
+			WithCtx(ctx).
+			WithErr(err)
 	}
-	defer func() {
-		if err := tx.Rollback(ctx); err != nil {
-			log.Warn("transaction failed to rollback", sl.ErrAttr(err))
-		}
-	}()
+	defer tx.Rollback(ctx)
 
-	row := tx.QueryRow(ctx, query)
+	row := tx.QueryRow(ctx, query, args...)
 
 	err = row.Scan(&user.Id)
 	if err != nil {
-		return internalErr.WithErr(err)
+		return e.InternalErr.
+			WithCtx(ctx).
+			WithErr(err)
 	}
 
 	if err := tx.Commit(ctx); err != nil {
-		return internalErr.WithErr(err)
+		return e.InternalErr.
+			WithCtx(ctx).
+			WithErr(err)
 	}
 
 	err = u.redis.Set(ctx, redisKey(user.Id), user, redisExpires).Err()
 	if err != nil {
-		return internalErr.WithErr(err)
+		return e.InternalErr.
+			WithCtx(ctx).
+			WithErr(err)
 	}
 
 	return nil
 }
 
-func (u *User) Update(ctx context.Context, user *entity.User) e.Error {
-	log := sl.L(ctx)
-
-	query := updateQuery(user)
+func (u *User) Update(ctx lec.Context, user *entity.User) e.Error {
+	query, args := updateQuery(user)
 
 	tx, err := u.postgres.Begin(ctx)
 	if err != nil {
-		return internalErr.WithErr(err)
+		return e.InternalErr.
+			WithCtx(ctx).
+			WithErr(err)
 	}
-	defer func() {
-		if err := tx.Rollback(ctx); err != nil {
-			log.Warn("transaction failed to rollback", sl.ErrAttr(err))
-		}
-	}()
+	defer tx.Rollback(ctx)
 
-	if _, err = tx.Exec(ctx, query); err != nil {
-		return internalErr.WithErr(err)
+	if _, err = tx.Exec(ctx, query, args...); err != nil {
+		return e.InternalErr.
+			WithCtx(ctx).
+			WithErr(err)
 	}
 
 	if err := tx.Commit(ctx); err != nil {
-		return internalErr.WithErr(err)
+		return e.InternalErr.
+			WithCtx(ctx).
+			WithErr(err)
 	}
 
 	err = u.redis.Del(ctx, redisKey(user.Id)).Err()
 	if err != nil {
-		return internalErr.WithErr(err)
+		return e.InternalErr.
+			WithCtx(ctx).
+			WithErr(err)
+	}
+
+	user, getErr := u.GetById(ctx, user.Id)
+	if getErr != nil {
+		return getErr
+	}
+
+	err = u.redis.Set(ctx, redisKey(user.Id), user, redisExpires).Err()
+	if err != nil {
+		return e.InternalErr.
+			WithCtx(ctx).
+			WithErr(err)
+	}
+
+	return nil
+}
+
+func (u *User) Verify(ctx lec.Context, user *entity.User) e.Error {
+	query, args := verifyQuery(user.Id, user.Verified)
+
+	tx, err := u.postgres.Begin(ctx)
+	if err != nil {
+		return e.InternalErr.
+			WithCtx(ctx).
+			WithErr(err)
+	}
+	defer tx.Rollback(ctx)
+
+	if _, err = tx.Exec(ctx, query, args...); err != nil {
+		return e.InternalErr.
+			WithCtx(ctx).
+			WithErr(err)
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return e.InternalErr.
+			WithCtx(ctx).
+			WithErr(err)
+	}
+
+	err = u.redis.Del(ctx, redisKey(user.Id)).Err()
+	if err != nil {
+		return e.InternalErr.
+			WithCtx(ctx).
+			WithErr(err)
 	}
 
 	user, getErr := u.GetById(ctx, user.Id)
@@ -141,78 +199,43 @@ func (u *User) Update(ctx context.Context, user *entity.User) e.Error {
 
 	err = u.redis.Set(ctx, redisKey(user.Id), user, redisExpires).Err()
 	if err != nil {
-		return internalErr.WithErr(err)
+		return e.InternalErr.
+			WithCtx(ctx).
+			WithErr(err)
 	}
 
 	return nil
 }
 
-func (u *User) Verify(ctx context.Context, user *entity.User) e.Error {
-	log := sl.L(ctx)
-	query := verifyQuery(user.Verified, user.Id)
+func (u *User) Delete(ctx lec.Context, user *entity.User) e.Error {
+	query, args := deleteQuery(user.Id)
 
 	tx, err := u.postgres.Begin(ctx)
 	if err != nil {
-		return internalErr.WithErr(err)
+		return e.InternalErr.
+			WithCtx(ctx).
+			WithErr(err)
 	}
-	defer func() {
-		if err := tx.Rollback(ctx); err != nil {
-			log.Warn("transaction failed to rollback", sl.ErrAttr(err))
-		}
-	}()
+	defer tx.Rollback(ctx)
 
-	if _, err = tx.Exec(ctx, query); err != nil {
-		return internalErr.WithErr(err)
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		return internalErr.WithErr(err)
-	}
-
-	err = u.redis.Del(ctx, redisKey(user.Id)).Err()
+	_, err = tx.Exec(ctx, query, args...)
 	if err != nil {
-		return internalErr.WithErr(err)
-	}
-
-	user, getErr := u.GetById(ctx, user.Id)
-	if getErr != nil {
-		return getErr.WithErr(err)
-	}
-
-	err = u.redis.Set(ctx, redisKey(user.Id), user, redisExpires).Err()
-	if err != nil {
-		return internalErr.WithErr(err)
-	}
-
-	return nil
-}
-
-func (u *User) Delete(ctx context.Context, user *entity.User) e.Error {
-	log := sl.L(ctx)
-	query := deleteQuery()
-
-	tx, err := u.postgres.Begin(ctx)
-	if err != nil {
-		return internalErr.WithErr(err)
-	}
-	defer func() {
-		if err := tx.Rollback(ctx); err != nil {
-			log.Warn("transaction failed to rollback", sl.ErrAttr(err))
-		}
-	}()
-
-	_, err = tx.Exec(ctx, query, user.Id)
-	if err != nil {
-		return internalErr.WithErr(err)
+		return e.InternalErr.
+			WithCtx(ctx).
+			WithErr(err)
 	}
 
 	if err = tx.Commit(ctx); err != nil {
-		return internalErr.WithErr(err)
+		return e.InternalErr.
+			WithCtx(ctx).
+			WithErr(err)
 	}
 
 	err = u.redis.Del(ctx, redisKey(user.Id)).Err()
 	if err != nil {
-		return internalErr.WithErr(err)
+		return e.InternalErr.
+			WithCtx(ctx).
+			WithErr(err)
 	}
 
 	return nil

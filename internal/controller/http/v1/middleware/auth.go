@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"slices"
 	"strings"
 
 	"app/internal/usecase/pkg/auth"
@@ -16,21 +15,20 @@ const (
 )
 
 var (
-	foundErr     = e.New("Authorization header wasn`t found", e.Unauthorize)
-	bearerErr    = e.New("Token is not bearer", e.Unauthorize)
-	forbiddenErr = e.New("This resource is forbidden", e.Forbidden)
+	foundErr  = e.New("Authorization header wasn`t found", e.Unauthorize)
+	bearerErr = e.New("Token is not bearer", e.Unauthorize)
 )
 
-type JwtUseCase interface {
+type AuthUseCase interface {
 	ValidateToken(jwtString string, isRefresh bool) (*auth.Claims, e.Error)
 }
 
-func (m *Middleware) CheckAccess(roles ...string) gin.HandlerFunc {
+func (m *Middleware) CheckAccess() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		header := ctx.GetHeader("Authorization")
 
 		if header == "" {
-			gins.Abort(ctx,foundErr )
+			gins.Abort(ctx, foundErr)
 			return
 		}
 
@@ -47,14 +45,9 @@ func (m *Middleware) CheckAccess(roles ...string) gin.HandlerFunc {
 			return
 		}
 
-		claims, err := m.jwt.ValidateToken(token, false)
+		claims, err := m.auth.ValidateToken(token, false)
 		if err != nil {
 			gins.Abort(ctx, err)
-			return
-		}
-
-		if len(roles) != 0 && !slices.Contains(roles, claims.Role) {
-			gins.Abort(ctx, forbiddenErr)
 			return
 		}
 

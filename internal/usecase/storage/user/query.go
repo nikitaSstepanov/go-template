@@ -2,97 +2,90 @@ package user
 
 import (
 	"fmt"
-	"strings"
 
 	"app/internal/entity"
+
+	sq "github.com/Masterminds/squirrel"
 )
 
-func idQuery(id uint64) string {
-	return fmt.Sprintf(
-		`
-			SELECT * FROM %s 
-			WHERE id = %d;
-		`, usersTable, id,
-	)
+func idQuery(id uint64) (string, []interface{}) {
+	builder := sq.Select("*").From(usersTable).
+		Where(sq.Eq{"id": id}).PlaceholderFormat(sq.Dollar)
+
+	query, args, _ := builder.ToSql()
+
+	return query, args
 }
 
-func emailQuery(email string) string {
-	return fmt.Sprintf(
-		`
-			SELECT * FROM %s 
-			WHERE email = '%s';
-		`, usersTable, email,
-	)
+func emailQuery(email string) (string, []interface{}) {
+	builder := sq.Select("*").From(usersTable).
+		Where(sq.Eq{"email": email}).PlaceholderFormat(sq.Dollar)
+
+	query, args, _ := builder.ToSql()
+
+	return query, args
 }
 
-func createQuery(user *entity.User) string {
-	return fmt.Sprintf(
-		`
-			INSERT INTO %s 
-				(email, name, password, age) 
-			VALUES 
-				('%s', '%s', '%s', %d) 
-			RETURNING id;
-		`,
-		usersTable, user.Email, user.Name, user.Password, user.Age,
-	)
+func createQuery(user *entity.User) (string, []interface{}) {
+	builder := sq.Insert(usersTable).
+		Columns(
+			"email", "name", "password", "age",
+		).
+		Values(
+			user.Email, user.Name, user.Password, user.Age,
+		).
+		Suffix("RETURNING id").PlaceholderFormat(sq.Dollar)
+
+	query, args, _ := builder.ToSql()
+
+	return query, args
 }
 
-func updateQuery(user *entity.User) string {
-	toUpd := setupValues(user)
+func updateQuery(user *entity.User) (string, []interface{}) {
+	builder := sq.Update(usersTable)
 
-	return fmt.Sprintf(
-		`
-			UPDATE %s 
-			SET %s 
-			WHERE id = %d;
-		`, usersTable, toUpd, user.Id,
-	)
+	if user.Email != "" {
+		builder = builder.Set("email", user.Email)
+	}
+
+	if user.Name != "" {
+		builder = builder.Set("name", user.Name)
+	}
+
+	if user.Password != "" {
+		builder = builder.Set("password", user.Password)
+	}
+
+	if user.Age != 0 {
+		builder = builder.Set("age", user.Age)
+	}
+
+	builder = builder.Where(sq.Eq{"id": user.Id}).PlaceholderFormat(sq.Dollar)
+
+	query, args, _ := builder.ToSql()
+
+	return query, args
 }
 
-func verifyQuery(verified bool, id uint64) string {
-	return fmt.Sprintf(
-		`
-			UPDATE %s 
-			SET verified = %t
-			WHERE id = %d;
-		`, usersTable, verified, id,
-	)
+func verifyQuery(id uint64, verified bool) (string, []interface{}) {
+	builder := sq.Update(usersTable).
+		Set("verified", verified).
+		Where(sq.Eq{"id": id}).PlaceholderFormat(sq.Dollar)
+
+	query, args, _ := builder.ToSql()
+
+	return query, args
 }
 
-func deleteQuery() string {
-	return fmt.Sprintf(
-		`
-			DELETE FROM %s 
-			WHERE id = $1;
-		`, usersTable,
-	)
+func deleteQuery(id uint64) (string, []interface{}) {
+	builder := sq.Delete(usersTable).
+		Where(sq.Eq{"id": id}).PlaceholderFormat(sq.Dollar)
+
+	query, args, _ := builder.ToSql()
+
+	return query, args
 }
 
 func redisKey(id uint64) string {
 	return fmt.Sprintf("users:%d", id)
-}
-
-func setupValues(user *entity.User) string {
-	toUpd := make([]string, 0)
-
-	if user.Email != "" {
-		toUpd = append(toUpd, fmt.Sprintf("email = '%s'", user.Email))
-	}
-
-	if user.Name != "" {
-		toUpd = append(toUpd, fmt.Sprintf("name = '%s'", user.Name))
-	}
-
-	if user.Password != "" {
-		toUpd = append(toUpd, fmt.Sprintf("password = '%s'", user.Password))
-	}
-
-	if user.Age != 0 {
-		toUpd = append(toUpd, fmt.Sprintf("age = %d", user.Age))
-	}
-
-	query := strings.Join(toUpd, ", ")
-
-	return query
 }

@@ -53,27 +53,20 @@ func (a *App) Run() {
 
 	a.server.Start()
 
-	if err := a.shutdown(); err != nil {
-		log.Error("Failed to shutdown app", sl.ErrAttr(err))
-		return
-	}
+	a.shutdown()
 
 	log.Info("Application stopped successfully")
 }
 
-func (a *App) shutdown() e.Error {
+func (a *App) shutdown() {
 	log := a.ctx.Logger()
 
 	err := e.E(a.server.Shutdown(log.ToSlog()))
 	if err != nil {
-		log.Error("Failed to stop http server", err.SlErr())
-		return err
+		log.Fatal("Failed to stop http server", err.SlErr())
 	}
 
 	if err := a.storage.Close(); err != nil {
-		log.Error("Failed to close storage", err.SlErr())
-		return err
+		log.Fatal("Failed to close storage", err.SlErr())
 	}
-
-	return nil
 }

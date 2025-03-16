@@ -1,13 +1,13 @@
 package account
 
 import (
-	"context"
 	"net/http"
 
 	resp "app/internal/controller/response"
 	"app/internal/entity"
 
 	"github.com/gosuit/e"
+	"github.com/gosuit/lec"
 )
 
 const (
@@ -31,10 +31,10 @@ var (
 )
 
 type AccountUseCase interface {
-	Get(ctx context.Context, userId uint64) (*entity.User, e.Error)
-	Create(ctx context.Context, user *entity.User) (*entity.Tokens, e.Error)
-	Update(ctx context.Context, user *entity.User, pass string) e.Error
-	Verify(ctx context.Context, id uint64, code string) e.Error
-	ResendCode(ctx context.Context, userId uint64) e.Error
-	Delete(ctx context.Context, user *entity.User) e.Error
+	Get(ctx lec.Context, userId uint64) (*entity.User, e.Error)
+	Create(ctx lec.Context, user *entity.User) (*entity.Tokens, e.Error)
+	Update(ctx lec.Context, user *entity.User, pass string) e.Error
+	Verify(ctx lec.Context, id uint64, code string) e.Error
+	ResendCode(ctx lec.Context, userId uint64) e.Error
+	Delete(ctx lec.Context, user *entity.User) e.Error
 }

@@ -32,6 +32,7 @@ func New(uc AuthUseCase) *Auth {
 // @Failure 500 {object} dto.JsonError "Something going wrong..."
 // @Router /account/auth/login [post]
 func (a *Auth) Login(c *gin.Context) {
+	ctx := gins.GetCtx(c)
 	var body dto.Login
 
 	if err := c.ShouldBindJSON(&body); err != nil {
@@ -46,7 +47,7 @@ func (a *Auth) Login(c *gin.Context) {
 
 	user := conv.EntityLogin(body)
 
-	tokens, err := a.usecase.Login(c, user)
+	tokens, err := a.usecase.Login(ctx, user)
 	if err != nil {
 		gins.Abort(c, err)
 		return
@@ -69,17 +70,7 @@ func (a *Auth) Login(c *gin.Context) {
 // @Failure 500 {object} dto.JsonError "Something going wrong..."
 // @Router  /account/auth/logout [post]
 func (a *Auth) Logout(c *gin.Context) {
-	userId := c.GetUint64("userId")
-
-	err := a.usecase.Logout(c, userId)
-	if err != nil {
-		gins.Abort(c, err)
-		return
-	}
-
 	c.SetCookie(cookieName, "", -1, cookiePath, cookieHost, false, true)
-
-	c.JSON(ok, logoutMsg)
 }
 
 // @Summary Refresh user tokens
@@ -93,13 +84,14 @@ func (a *Auth) Logout(c *gin.Context) {
 // @Failure 500 {object} dto.JsonError "Something going wrong..."
 // @Router /account/auth/refresh [get]
 func (a *Auth) Refresh(c *gin.Context) {
+	ctx := gins.GetCtx(c)
 	refresh, cookieErr := c.Cookie(cookieName)
 	if cookieErr != nil {
 		gins.Abort(c, badReqErr.WithErr(cookieErr))
 		return
 	}
 
-	tokens, err := a.usecase.Refresh(c, refresh)
+	tokens, err := a.usecase.Refresh(ctx, refresh)
 	if err != nil {
 		gins.Abort(c, err)
 		return

@@ -2,27 +2,27 @@ package auth
 
 import (
 	"app/internal/entity"
-	"context"
 
 	"github.com/gosuit/e"
-	"golang.org/x/crypto/bcrypt"
+	"github.com/gosuit/lec"
+	"github.com/gosuit/utils/coder"
 )
 
 type Auth struct {
 	user  UserStorage
-	token TokenStorage
 	jwt   *Jwt
+	coder *coder.Coder
 }
 
-func New(user UserStorage, token TokenStorage, jwt *Jwt) *Auth {
+func New(uc *UseCases, store *Storages) *Auth {
 	return &Auth{
-		user:  user,
-		token: token,
-		jwt:   jwt,
+		user:  store.User,
+		jwt:   uc.Jwt,
+		coder: uc.Coder,
 	}
 }
 
-func (a *Auth) Login(ctx context.Context, user *entity.User) (*entity.Tokens, e.Error) {
+func (a *Auth) Login(ctx lec.Context, user *entity.User) (*entity.Tokens, e.Error) {
 	candidate, err := a.user.GetByEmail(ctx, user.Email)
 	if err != nil {
 		return nil, err
@@ -32,26 +32,16 @@ func (a *Auth) Login(ctx context.Context, user *entity.User) (*entity.Tokens, e.
 		return nil, badDataErr
 	}
 
-	if err := a.checkPassword(candidate.Password, user.Password); err != nil {
+	if err := a.coder.CompareHash(candidate.Password, user.Password); err != nil {
 		return nil, badDataErr.WithErr(err)
 	}
 
-	access, err := a.jwt.GenerateToken(candidate.Id, candidate.Role, accessExpires, false)
+	access, err := a.jwt.GenerateToken(candidate, accessExpires, false)
 	if err != nil {
 		return nil, err
 	}
 
-	refresh, err := a.jwt.GenerateToken(candidate.Id, candidate.Role, refreshExpires, true)
-	if err != nil {
-		return nil, err
-	}
-
-	token := &entity.Token{
-		Token:  refresh,
-		UserId: candidate.Id,
-	}
-
-	err = a.token.Set(ctx, token)
+	refresh, err := a.jwt.GenerateToken(candidate, refreshExpires, true)
 	if err != nil {
 		return nil, err
 	}
@@ -64,46 +54,23 @@ func (a *Auth) Login(ctx context.Context, user *entity.User) (*entity.Tokens, e.
 	return result, nil
 }
 
-func (a *Auth) Logout(ctx context.Context, userId uint64) e.Error {
-	return a.token.Del(ctx, userId)
-}
-
-func (a *Auth) Refresh(ctx context.Context, refresh string) (*entity.Tokens, e.Error) {
+func (a *Auth) Refresh(ctx lec.Context, refresh string) (*entity.Tokens, e.Error) {
 	claims, err := a.jwt.ValidateToken(refresh, true)
 	if err != nil {
 		return nil, err
 	}
 
-	token, err := a.token.Get(ctx, claims.Id)
+	user, err := a.user.GetById(ctx, claims.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	if claims.Id != token.UserId {
-		return nil, unauthErr
-	}
-
-	user, err := a.user.GetById(ctx, token.UserId)
+	access, err := a.jwt.GenerateToken(user, accessExpires, false)
 	if err != nil {
 		return nil, err
 	}
 
-	access, err := a.jwt.GenerateToken(user.Id, user.Role, accessExpires, false)
-	if err != nil {
-		return nil, err
-	}
-
-	refresh, err = a.jwt.GenerateToken(user.Id, user.Role, refreshExpires, true)
-	if err != nil {
-		return nil, err
-	}
-
-	token = &entity.Token{
-		Token:  refresh,
-		UserId: user.Id,
-	}
-
-	err = a.token.Set(ctx, token)
+	refresh, err = a.jwt.GenerateToken(user, refreshExpires, true)
 	if err != nil {
 		return nil, err
 	}
@@ -116,6 +83,6 @@ func (a *Auth) Refresh(ctx context.Context, refresh string) (*entity.Tokens, e.E
 	return result, nil
 }
 
-func (a *Auth) checkPassword(hash string, password string) error {
-	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+func (a *Auth) ValidateToken(jwtString string, isRefresh bool) (*Claims, e.Error) {
+	return a.jwt.ValidateToken(jwtString, isRefresh)
 }

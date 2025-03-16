@@ -2,7 +2,6 @@ package storage
 
 import (
 	code "app/internal/usecase/storage/activation_code"
-	"app/internal/usecase/storage/token"
 	"app/internal/usecase/storage/user"
 
 	"github.com/gosuit/e"
@@ -13,11 +12,10 @@ import (
 )
 
 type Storage struct {
-	pg     pg.Client
-	rs     rs.Client
-	Users  *user.User
-	Tokens *token.Token
-	Codes  *code.Code
+	Users *user.User
+	Codes *code.Code
+	pg    pg.Client
+	rs    rs.Client
 }
 
 type Config struct {
@@ -30,11 +28,10 @@ func New(c lec.Context, cfg *Config) *Storage {
 	redis := connectRs(c, cfg.Redis)
 
 	return &Storage{
-		pg:     postgres,
-		rs:     redis,
-		Users:  user.New(postgres, redis),
-		Tokens: token.New(redis),
-		Codes:  code.New(redis),
+		Users: user.New(postgres, redis),
+		Codes: code.New(redis),
+		pg:    postgres,
+		rs:    redis,
 	}
 }
 
@@ -43,8 +40,7 @@ func connectPg(c lec.Context, cfg pg.Config) pg.Client {
 
 	postgres, err := pg.New(c, &cfg)
 	if err != nil {
-		log.Error("Can`t connect to postgres.", sl.ErrAttr(err))
-		panic("App start error.")
+		log.Fatal("Can`t connect to postgres.", sl.ErrAttr(err))
 	} else {
 		log.Info("Postgres is connected.")
 	}
@@ -57,8 +53,7 @@ func connectRs(c lec.Context, cfg rs.Config) rs.Client {
 
 	redis, err := rs.New(c, &cfg)
 	if err != nil {
-		log.Error("Can`t connect to redis.", sl.ErrAttr(err))
-		panic("App start error.")
+		log.Fatal("Can`t connect to redis.", sl.ErrAttr(err))
 	} else {
 		log.Info("Redis is connected.")
 	}

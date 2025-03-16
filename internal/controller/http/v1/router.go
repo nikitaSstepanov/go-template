@@ -2,7 +2,11 @@ package v1
 
 import (
 	_ "app/docs"
+	"app/internal/controller/http/v1/middleware"
+	"app/internal/controller/http/v1/pkg/account"
+	"app/internal/controller/http/v1/pkg/auth"
 	"app/internal/usecase"
+	"app/pkg/swagger"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gosuit/gins"
@@ -17,10 +21,18 @@ type Router struct {
 	mid     Middleware
 }
 
-type Config struct{}
+type Config struct {
+	Swagger swagger.SwaggerSpec
+}
 
 func New(uc *usecase.UseCase, cfg *Config) *Router {
-	return &Router{}
+	swagger.SetSwaggerConfig(cfg.Swagger)
+
+	return &Router{
+		account: account.New(uc.Account),
+		auth:    auth.New(uc.Auth),
+		mid:     middleware.New(uc.Auth),
+	}
 }
 
 func (r *Router) InitRoutes(c lec.Context, h *gin.RouterGroup) *gin.RouterGroup {
@@ -29,8 +41,8 @@ func (r *Router) InitRoutes(c lec.Context, h *gin.RouterGroup) *gin.RouterGroup 
 		router.Use(gins.InitLogger(c))
 
 		r.initSwaggerRoute(router)
-		r.initAccountRoutes(router)
-		r.initAuthRoutes(router)
+		account := r.initAccountRoutes(router)
+		r.initAuthRoutes(account)
 	}
 
 	return router
@@ -50,21 +62,21 @@ func (r *Router) initAccountRoutes(h *gin.RouterGroup) *gin.RouterGroup {
 	return router
 }
 
-func (r *Router) initSwaggerRoute(h *gin.RouterGroup) *gin.RouterGroup {
-	router := h.Group("swagger")
+func (r *Router) initAuthRoutes(h *gin.RouterGroup) *gin.RouterGroup {
+	router := h.Group("/auth")
 	{
-		router.GET("/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+		router.POST("/login", r.auth.Login)
+		router.POST("/logout", r.auth.Logout)
+		router.GET("/refresh", r.auth.Refresh)
 	}
 
 	return router
 }
 
-func (r *Router) initAuthRoutes(h *gin.RouterGroup) *gin.RouterGroup {
-	router := h.Group("/auth")
+func (r *Router) initSwaggerRoute(h *gin.RouterGroup) *gin.RouterGroup {
+	router := h.Group("swagger")
 	{
-		router.POST("/login", r.auth.Login)
-		router.POST("/logout", r.mid.CheckAccess(), r.auth.Logout)
-		router.GET("/refresh", r.auth.Refresh)
+		router.GET("/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	}
 
 	return router

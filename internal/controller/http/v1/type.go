@@ -1,8 +1,6 @@
 package v1
 
 import (
-	"context"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,6 +20,5 @@ type AccountHandler interface {
 }
 
 type Middleware interface {
-	CheckAccess(roles ...string) gin.HandlerFunc
-	InitLogger(ctx context.Context) gin.HandlerFunc
+	CheckAccess() gin.HandlerFunc
 }

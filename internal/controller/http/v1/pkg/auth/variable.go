@@ -1,14 +1,13 @@
 package auth
 
 import (
-	"context"
 	"net/http"
 
-	resp "app/internal/controller/response"
 	"app/internal/entity"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gosuit/e"
+	"github.com/gosuit/lec"
 )
 
 const (
@@ -25,14 +24,11 @@ const (
 
 var (
 	badReqErr = e.New("Incorrect data.", e.BadInput)
-
-	logoutMsg = resp.NewMessage("Logout success.")
 )
 
 type AuthUseCase interface {
-	Login(ctx context.Context, user *entity.User) (*entity.Tokens, e.Error)
-	Logout(ctx context.Context, userId uint64) e.Error
-	Refresh(ctx context.Context, refresh string) (*entity.Tokens, e.Error)
+	Login(ctx lec.Context, user *entity.User) (*entity.Tokens, e.Error)
+	Refresh(ctx lec.Context, refresh string) (*entity.Tokens, e.Error)
 }
 
 type Middleware interface {

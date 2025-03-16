@@ -4,7 +4,7 @@ import "encoding/json"
 
 type ActivationCode struct {
 	Code   string `redis:"code"`
-	UserId uint64 `redis:"userId"`
+	UserId uint64 `redis:"user_id"`
 }
 
 func (c *ActivationCode) MarshalBinary() ([]byte, error) {

@@ -11,7 +11,6 @@ type User struct {
 	Email    string `redis:"email"`
 	Name     string `redis:"name"`
 	Password string `redis:"password"`
-	Role     string `redis:"role"`
 	Age      int    `redis:"age"`
 	Verified bool   `redis:"verified"`
 }
@@ -30,7 +29,6 @@ func (u *User) Scan(r pg.Row) error {
 		&u.Email,
 		&u.Name,
 		&u.Password,
-		&u.Role,
 		&u.Age,
 		&u.Verified,
 	)
