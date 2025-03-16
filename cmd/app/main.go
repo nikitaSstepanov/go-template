@@ -1,6 +1,6 @@
 package main
 
-import "github.com/nikitaSstepanov/templates/golang/internal/app"
+import "app/internal/app"
 
 // @securityDefinitions.apikey Bearer
 // @in header

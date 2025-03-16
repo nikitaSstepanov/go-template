@@ -404,8 +404,8 @@ const docTemplate = `{
                 "summary": "Verify user activation code",
                 "parameters": [
                     {
-                        "maxLength": 50,
-                        "minLength": 8,
+                        "maxLength": 6,
+                        "minLength": 6,
                         "type": "string",
                         "description": "Activation Code",
                         "name": "code",

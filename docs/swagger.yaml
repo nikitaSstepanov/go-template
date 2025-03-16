@@ -332,8 +332,8 @@ paths:
       parameters:
       - description: Activation Code
         in: path
-        maxLength: 50
-        minLength: 8
+        maxLength: 6
+        minLength: 6
         name: code
         required: true
         type: string

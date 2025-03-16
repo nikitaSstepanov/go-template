@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 
-	"github.com/nikitaSstepanov/templates/golang/internal/entity"
+	"app/internal/entity"
 	"github.com/nikitaSstepanov/tools/client/pg"
 	rs "github.com/nikitaSstepanov/tools/client/redis"
 	e "github.com/nikitaSstepanov/tools/error"

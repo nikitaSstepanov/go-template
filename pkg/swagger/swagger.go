@@ -1,6 +1,6 @@
 package swagger
 
-import "github.com/nikitaSstepanov/templates/golang/docs"
+import "app/docs"
 
 type SwaggerSpec struct {
 	Version     string   `yaml:"version"`

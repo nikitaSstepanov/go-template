@@ -5,8 +5,8 @@ import (
 
 	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/joho/godotenv"
-	"github.com/nikitaSstepanov/templates/golang/internal/usecase/pkg/auth"
-	"github.com/nikitaSstepanov/templates/golang/pkg/swagger"
+	"app/internal/usecase/pkg/auth"
+	"app/pkg/swagger"
 	"github.com/nikitaSstepanov/tools/client/mail"
 	"github.com/nikitaSstepanov/tools/client/pg"
 	"github.com/nikitaSstepanov/tools/client/redis"

@@ -9,8 +9,8 @@ import (
 
 	"github.com/brianvoe/gofakeit"
 	"github.com/gavv/httpexpect/v2"
-	"github.com/nikitaSstepanov/templates/golang/internal/usecase/storage/activation_code"
-	"github.com/nikitaSstepanov/templates/golang/internal/usecase/storage/user"
+	"app/internal/usecase/storage/activation_code"
+	"app/internal/usecase/storage/user"
 	"github.com/nikitaSstepanov/tools/client/pg"
 	"github.com/nikitaSstepanov/tools/client/redis"
 	"github.com/nikitaSstepanov/tools/sl"

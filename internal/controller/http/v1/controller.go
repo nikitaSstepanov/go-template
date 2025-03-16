@@ -5,11 +5,11 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/nikitaSstepanov/templates/golang/internal/controller/http/v1/middleware"
-	"github.com/nikitaSstepanov/templates/golang/internal/controller/http/v1/pkg/account"
-	"github.com/nikitaSstepanov/templates/golang/internal/controller/http/v1/pkg/auth"
-	"github.com/nikitaSstepanov/templates/golang/internal/usecase"
-	jwt "github.com/nikitaSstepanov/templates/golang/internal/usecase/pkg/auth"
+	"app/internal/controller/http/v1/middleware"
+	"app/internal/controller/http/v1/pkg/account"
+	"app/internal/controller/http/v1/pkg/auth"
+	"app/internal/usecase"
+	jwt "app/internal/usecase/pkg/auth"
 )
 
 type Controller struct {

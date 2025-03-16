@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	resp "github.com/nikitaSstepanov/templates/golang/internal/controller/response"
-	"github.com/nikitaSstepanov/templates/golang/internal/entity"
+	resp "app/internal/controller/response"
+	"app/internal/entity"
 	e "github.com/nikitaSstepanov/tools/error"
 )
 

@@ -2,7 +2,7 @@ package resp
 
 import (
 	"github.com/gin-gonic/gin"
-	cl "github.com/nikitaSstepanov/templates/golang/pkg/utils/controller"
+	cl "app/pkg/utils/controller"
 	e "github.com/nikitaSstepanov/tools/error"
 )
 

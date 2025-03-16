@@ -3,7 +3,7 @@ package token
 import (
 	"context"
 
-	"github.com/nikitaSstepanov/templates/golang/internal/entity"
+	"app/internal/entity"
 	rs "github.com/nikitaSstepanov/tools/client/redis"
 	e "github.com/nikitaSstepanov/tools/error"
 )

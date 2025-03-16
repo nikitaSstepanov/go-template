@@ -1,9 +1,9 @@
 package storage
 
 import (
-	code "github.com/nikitaSstepanov/templates/golang/internal/usecase/storage/activation_code"
-	"github.com/nikitaSstepanov/templates/golang/internal/usecase/storage/token"
-	"github.com/nikitaSstepanov/templates/golang/internal/usecase/storage/user"
+	code "app/internal/usecase/storage/activation_code"
+	"app/internal/usecase/storage/token"
+	"app/internal/usecase/storage/user"
 	"github.com/nikitaSstepanov/tools/client/pg"
 	rs "github.com/nikitaSstepanov/tools/client/redis"
 	e "github.com/nikitaSstepanov/tools/error"

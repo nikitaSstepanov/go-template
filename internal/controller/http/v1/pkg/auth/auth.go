@@ -2,10 +2,10 @@ package auth
 
 import (
 	"github.com/gin-gonic/gin"
-	conv "github.com/nikitaSstepanov/templates/golang/internal/controller/http/v1/converter"
-	"github.com/nikitaSstepanov/templates/golang/internal/controller/http/v1/dto"
-	"github.com/nikitaSstepanov/templates/golang/internal/controller/http/v1/validator"
-	resp "github.com/nikitaSstepanov/templates/golang/internal/controller/response"
+	conv "app/internal/controller/http/v1/converter"
+	"app/internal/controller/http/v1/dto"
+	"app/internal/controller/http/v1/validator"
+	resp "app/internal/controller/response"
 )
 
 type Auth struct {

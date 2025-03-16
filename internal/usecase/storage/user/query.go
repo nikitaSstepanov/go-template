@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/nikitaSstepanov/templates/golang/internal/entity"
+	"app/internal/entity"
 )
 
 func idQuery(id uint64) string {

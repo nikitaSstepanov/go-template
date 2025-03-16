@@ -3,8 +3,8 @@ package account
 import (
 	"context"
 
-	"github.com/nikitaSstepanov/templates/golang/internal/entity"
-	"github.com/nikitaSstepanov/templates/golang/pkg/utils/generator"
+	"app/internal/entity"
+	"app/pkg/utils/generator"
 	e "github.com/nikitaSstepanov/tools/error"
 	"github.com/nikitaSstepanov/tools/sl"
 	"golang.org/x/crypto/bcrypt"

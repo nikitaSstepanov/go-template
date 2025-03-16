@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/nikitaSstepanov/templates/golang/internal/entity"
+	"app/internal/entity"
 	e "github.com/nikitaSstepanov/tools/error"
 )
 

@@ -1,6 +1,6 @@
 package middleware
 
-import "github.com/nikitaSstepanov/templates/golang/internal/usecase/pkg/auth"
+import "app/internal/usecase/pkg/auth"
 
 type Middleware struct {
 	jwt JwtUseCase

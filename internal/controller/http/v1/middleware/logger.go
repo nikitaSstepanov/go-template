@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	cl "github.com/nikitaSstepanov/templates/golang/pkg/utils/controller"
+	cl "app/pkg/utils/controller"
 	"github.com/nikitaSstepanov/tools/sl"
 )
 

@@ -1,10 +1,10 @@
 package usecase
 
 import (
-	"github.com/nikitaSstepanov/templates/golang/internal/usecase/mail"
-	"github.com/nikitaSstepanov/templates/golang/internal/usecase/pkg/account"
-	"github.com/nikitaSstepanov/templates/golang/internal/usecase/pkg/auth"
-	"github.com/nikitaSstepanov/templates/golang/internal/usecase/storage"
+	"app/internal/usecase/mail"
+	"app/internal/usecase/pkg/account"
+	"app/internal/usecase/pkg/auth"
+	"app/internal/usecase/storage"
 	gomail "github.com/nikitaSstepanov/tools/client/mail"
 )
 

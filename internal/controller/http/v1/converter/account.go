@@ -1,8 +1,8 @@
 package converter
 
 import (
-	"github.com/nikitaSstepanov/templates/golang/internal/controller/http/v1/dto"
-	"github.com/nikitaSstepanov/templates/golang/internal/entity"
+	"app/internal/controller/http/v1/dto"
+	"app/internal/entity"
 )
 
 func DtoUser(user *entity.User) *dto.Account {

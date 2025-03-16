@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/nikitaSstepanov/templates/golang/internal/entity"
+	"app/internal/entity"
 	e "github.com/nikitaSstepanov/tools/error"
 )
 

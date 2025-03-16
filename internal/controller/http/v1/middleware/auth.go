@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	resp "github.com/nikitaSstepanov/templates/golang/internal/controller/response"
-	"github.com/nikitaSstepanov/templates/golang/internal/usecase/pkg/auth"
+	resp "app/internal/controller/response"
+	"app/internal/usecase/pkg/auth"
 	e "github.com/nikitaSstepanov/tools/error"
 )
 

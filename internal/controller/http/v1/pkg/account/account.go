@@ -2,10 +2,10 @@ package account
 
 import (
 	"github.com/gin-gonic/gin"
-	conv "github.com/nikitaSstepanov/templates/golang/internal/controller/http/v1/converter"
-	"github.com/nikitaSstepanov/templates/golang/internal/controller/http/v1/dto"
-	"github.com/nikitaSstepanov/templates/golang/internal/controller/http/v1/validator"
-	resp "github.com/nikitaSstepanov/templates/golang/internal/controller/response"
+	conv "app/internal/controller/http/v1/converter"
+	"app/internal/controller/http/v1/dto"
+	"app/internal/controller/http/v1/validator"
+	resp "app/internal/controller/response"
 )
 
 type Account struct {
@@ -132,7 +132,7 @@ func (a *Account) Update(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Security Bearer
-// @Param code path string true "Activation Code" minlength(8) maxlength(50)
+// @Param code path string true "Activation Code" minlength(6) maxlength(6)
 // @Success 200 {object} dto.Message "Verified."
 // @Failure 400 {object} dto.JsonError "Your activation code is wrong., Bad string length"
 // @Failure 401 {object} dto.JsonError "Authorization header wasn`t found, Token is not bearer"

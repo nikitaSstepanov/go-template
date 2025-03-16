@@ -7,7 +7,7 @@ import (
 
 	"github.com/brianvoe/gofakeit"
 	"github.com/gavv/httpexpect/v2"
-	"github.com/nikitaSstepanov/templates/golang/internal/controller/http/v1/dto"
+	"app/internal/controller/http/v1/dto"
 )
 
 func TestDeleteAccount(t *testing.T) {

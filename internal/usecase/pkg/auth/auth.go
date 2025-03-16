@@ -3,7 +3,7 @@ package auth
 import (
 	"context"
 
-	"github.com/nikitaSstepanov/templates/golang/internal/entity"
+	"app/internal/entity"
 	e "github.com/nikitaSstepanov/tools/error"
 	"golang.org/x/crypto/bcrypt"
 )

@@ -18,10 +18,10 @@ redis:
   db: 1
 
 mail:
-  host: ""
-  port: 0
-  username: ""
-  identity: ""
+    host:     "smtp.mail.ru"
+    port:     587
+    username: "intelligentmen@inbox.ru"
+    identity: ""
 
 jwt:
   issuer: "app"
@@ -33,5 +33,14 @@ logger:
   add_source: true
   is_json: true
   set_default: true
+
+swagger:
+  version: "1.0"
+  base_path: "/api/v1/"
+  host: "localhost:80"
+  schemes:
+    - "http"
+  title: "Template of API"
+  description: "This is the API documentation for template API."
 
 mode: "RELEASE"
