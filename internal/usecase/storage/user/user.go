@@ -4,10 +4,11 @@ import (
 	"context"
 
 	"app/internal/entity"
-	"github.com/nikitaSstepanov/tools/client/pg"
-	rs "github.com/nikitaSstepanov/tools/client/redis"
-	e "github.com/nikitaSstepanov/tools/error"
-	"github.com/nikitaSstepanov/tools/sl"
+
+	"github.com/gosuit/e"
+	"github.com/gosuit/pg"
+	"github.com/gosuit/rs"
+	"github.com/gosuit/sl"
 )
 
 type User struct {

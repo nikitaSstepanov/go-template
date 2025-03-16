@@ -4,10 +4,11 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/gin-gonic/gin"
-	resp "app/internal/controller/response"
 	"app/internal/usecase/pkg/auth"
-	e "github.com/nikitaSstepanov/tools/error"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gosuit/e"
+	"github.com/gosuit/gins"
 )
 
 const (
@@ -29,31 +30,31 @@ func (m *Middleware) CheckAccess(roles ...string) gin.HandlerFunc {
 		header := ctx.GetHeader("Authorization")
 
 		if header == "" {
-			resp.AbortErrMsg(ctx, foundErr)
+			gins.Abort(ctx,foundErr )
 			return
 		}
 
 		parts := strings.Split(header, " ")
 		if len(parts) < 2 {
-			resp.AbortErrMsg(ctx, bearerErr)
+			gins.Abort(ctx, bearerErr)
 			return
 		}
 		bearer := parts[0]
 		token := parts[1]
 
 		if bearer != bearerType {
-			resp.AbortErrMsg(ctx, bearerErr)
+			gins.Abort(ctx, bearerErr)
 			return
 		}
 
 		claims, err := m.jwt.ValidateToken(token, false)
 		if err != nil {
-			resp.AbortErrMsg(ctx, err)
+			gins.Abort(ctx, err)
 			return
 		}
 
 		if len(roles) != 0 && !slices.Contains(roles, claims.Role) {
-			resp.AbortErrMsg(ctx, forbiddenErr)
+			gins.Abort(ctx, forbiddenErr)
 			return
 		}
 

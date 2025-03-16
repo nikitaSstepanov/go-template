@@ -3,7 +3,7 @@ package entity
 import (
 	"encoding/json"
 
-	"github.com/nikitaSstepanov/tools/client/pg"
+	"github.com/gosuit/pg"
 )
 
 type User struct {

@@ -3,8 +3,8 @@ package mail
 import (
 	"fmt"
 
-	gomail "github.com/nikitaSstepanov/tools/client/mail"
-	e "github.com/nikitaSstepanov/tools/error"
+	"github.com/gosuit/e"
+	gomail "github.com/gosuit/mail"
 )
 
 type Mail struct {
@@ -22,8 +22,8 @@ func (m *Mail) SendActivation(to string, code string) e.Error {
 
 	if err := m.client.Send(to, message, activateSubject, htmlType); err != nil {
 		return internalErr.WithErr(fmt.Errorf(
-			"Failed to send mail, %s", err.Error(),
-			))
+			"failed to send mail, %s", err.Error(),
+		))
 	}
 
 	return nil

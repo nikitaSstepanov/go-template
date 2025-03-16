@@ -1,11 +1,12 @@
 package auth
 
 import (
-	"github.com/gin-gonic/gin"
 	conv "app/internal/controller/http/v1/converter"
 	"app/internal/controller/http/v1/dto"
 	"app/internal/controller/http/v1/validator"
-	resp "app/internal/controller/response"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gosuit/gins"
 )
 
 type Auth struct {
@@ -34,12 +35,12 @@ func (a *Auth) Login(c *gin.Context) {
 	var body dto.Login
 
 	if err := c.ShouldBindJSON(&body); err != nil {
-		resp.AbortErrMsg(c, badReqErr.WithErr(err))
+		gins.Abort(c, badReqErr.WithErr(err))
 		return
 	}
 
 	if err := validator.Struct(body, validator.Password); err != nil {
-		resp.AbortErrMsg(c, err)
+		gins.Abort(c, err)
 		return
 	}
 
@@ -47,7 +48,7 @@ func (a *Auth) Login(c *gin.Context) {
 
 	tokens, err := a.usecase.Login(c, user)
 	if err != nil {
-		resp.AbortErrMsg(c, err)
+		gins.Abort(c, err)
 		return
 	}
 
@@ -72,7 +73,7 @@ func (a *Auth) Logout(c *gin.Context) {
 
 	err := a.usecase.Logout(c, userId)
 	if err != nil {
-		resp.AbortErrMsg(c, err)
+		gins.Abort(c, err)
 		return
 	}
 
@@ -94,13 +95,13 @@ func (a *Auth) Logout(c *gin.Context) {
 func (a *Auth) Refresh(c *gin.Context) {
 	refresh, cookieErr := c.Cookie(cookieName)
 	if cookieErr != nil {
-		resp.AbortErrMsg(c, badReqErr.WithErr(cookieErr))
+		gins.Abort(c, badReqErr.WithErr(cookieErr))
 		return
 	}
 
 	tokens, err := a.usecase.Refresh(c, refresh)
 	if err != nil {
-		resp.AbortErrMsg(c, err)
+		gins.Abort(c, err)
 		return
 	}
 

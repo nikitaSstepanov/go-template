@@ -7,13 +7,14 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/brianvoe/gofakeit"
-	"github.com/gavv/httpexpect/v2"
 	"app/internal/usecase/storage/activation_code"
 	"app/internal/usecase/storage/user"
-	"github.com/nikitaSstepanov/tools/client/pg"
-	"github.com/nikitaSstepanov/tools/client/redis"
-	"github.com/nikitaSstepanov/tools/sl"
+
+	"github.com/brianvoe/gofakeit"
+	"github.com/gavv/httpexpect/v2"
+	"github.com/gosuit/pg"
+	"github.com/gosuit/rs"
+	"github.com/gosuit/sl"
 )
 
 func TestVerifyAccount(t *testing.T) {
@@ -103,7 +104,7 @@ func TestVerifyAccount(t *testing.T) {
 }
 
 func connectToPostgres(t *testing.T) pg.Client {
-	client, err := pg.ConnectToDb(context.TODO(), &testCfg.Postgres)
+	client, err := pg.New(context.TODO(), &testCfg.Postgres)
 	if err != nil {
 		t.Fatal("Failed to connect to postgres", sl.ErrAttr(err))
 	}
@@ -111,8 +112,8 @@ func connectToPostgres(t *testing.T) pg.Client {
 	return client
 }
 
-func connectToRedis(t *testing.T) redis.Client {
-	client, err := redis.ConnectToRedis(context.TODO(), &testCfg.Redis)
+func connectToRedis(t *testing.T) rs.Client {
+	client, err := rs.New(context.TODO(), &testCfg.Redis)
 	if err != nil {
 		t.Fatal("Failed to connect to redis", sl.ErrAttr(err))
 	}

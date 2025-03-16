@@ -6,7 +6,8 @@ import (
 
 	resp "app/internal/controller/response"
 	"app/internal/entity"
-	e "github.com/nikitaSstepanov/tools/error"
+
+	"github.com/gosuit/e"
 )
 
 const (

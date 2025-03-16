@@ -1,12 +1,12 @@
 package account
 
 import (
+	"app/internal/entity"
 	"context"
 
-	"app/internal/entity"
-	"app/pkg/utils/generator"
-	e "github.com/nikitaSstepanov/tools/error"
-	"github.com/nikitaSstepanov/tools/sl"
+	"github.com/gosuit/e"
+	"github.com/gosuit/sl"
+	"github.com/gosuit/utils/generator"
 	"golang.org/x/crypto/bcrypt"
 )
 

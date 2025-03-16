@@ -3,36 +3,32 @@ package app
 import (
 	"os"
 
+	"app/internal/controller"
+	"app/internal/usecase"
+	"app/internal/usecase/storage"
+
+	"github.com/gosuit/httper"
+	"github.com/gosuit/sl"
 	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/joho/godotenv"
-	"app/internal/usecase/pkg/auth"
-	"app/pkg/swagger"
-	"github.com/nikitaSstepanov/tools/client/mail"
-	"github.com/nikitaSstepanov/tools/client/pg"
-	"github.com/nikitaSstepanov/tools/client/redis"
-	"github.com/nikitaSstepanov/tools/hserv"
-	"github.com/nikitaSstepanov/tools/sl"
 )
 
-type appConfig struct {
-	Server   hserv.Config        `yaml:"server"`
-	Postgres pg.Config           `yaml:"postgres"`
-	Redis    redis.Config        `yaml:"redis"`
-	Mail     mail.Config         `yaml:"mail"`
-	Jwt      auth.JwtOptions     `yaml:"jwt"`
-	Logger   sl.Config           `yaml:"logger"`
-	Mode     string              `yaml:"mode" env:"MODE" env-default:"DEBUG"`
-	Swagger  swagger.SwaggerSpec `yaml:"swagger"`
+type Config struct {
+	Controller controller.Config `yaml:"controller"`
+	UseCase    usecase.Config    `yaml:"usecase"`
+	Storage    storage.Config    `yaml:"storage"`
+	Server     httper.ServerCfg  `yaml:"server"`
+	Logger     sl.Config         `yaml:"logger"`
 }
 
-func getAppConfig() (*appConfig, error) {
+func getConfig() (*Config, error) {
 	if err := godotenv.Load(".env"); err != nil {
 		return nil, err
 	}
 
 	path := getConfigPath()
 
-	var cfg appConfig
+	var cfg Config
 
 	err := cleanenv.ReadConfig(path, &cfg)
 	if err != nil {

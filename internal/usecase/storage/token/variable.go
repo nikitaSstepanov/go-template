@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	e "github.com/nikitaSstepanov/tools/error"
+	"github.com/gosuit/e"
 )
 
 const (

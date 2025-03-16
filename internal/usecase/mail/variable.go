@@ -1,11 +1,11 @@
 package mail
 
-import e "github.com/nikitaSstepanov/tools/error"
+import "github.com/gosuit/e"
 
 const (
 	activateSubject = "Email verification"
 
-	htmlType = "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";"
+	htmlType = "text/html"
 )
 
 var (

@@ -2,7 +2,7 @@ package validator
 
 import (
 	"github.com/go-playground/validator/v10"
-	e "github.com/nikitaSstepanov/tools/error"
+	"github.com/gosuit/e"
 )
 
 func Struct(s interface{}, args ...Arg) e.Error {

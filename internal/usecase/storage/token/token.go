@@ -4,8 +4,9 @@ import (
 	"context"
 
 	"app/internal/entity"
-	rs "github.com/nikitaSstepanov/tools/client/redis"
-	e "github.com/nikitaSstepanov/tools/error"
+
+	"github.com/gosuit/e"
+	"github.com/gosuit/rs"
 )
 
 type Token struct {

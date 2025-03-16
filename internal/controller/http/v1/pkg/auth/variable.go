@@ -4,10 +4,11 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
 	resp "app/internal/controller/response"
 	"app/internal/entity"
-	e "github.com/nikitaSstepanov/tools/error"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gosuit/e"
 )
 
 const (

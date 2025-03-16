@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	e "github.com/nikitaSstepanov/tools/error"
+	"github.com/gosuit/e"
 )
 
 type Jwt struct {

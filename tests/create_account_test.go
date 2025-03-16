@@ -6,9 +6,10 @@ import (
 	"strings"
 	"testing"
 
+	"app/internal/controller/http/v1/dto"
+
 	"github.com/brianvoe/gofakeit"
 	"github.com/gavv/httpexpect/v2"
-	"app/internal/controller/http/v1/dto"
 )
 
 func genRandEmail() string {

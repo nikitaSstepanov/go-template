@@ -4,7 +4,7 @@ import (
 	"unicode"
 
 	"github.com/go-playground/validator/v10"
-	e "github.com/nikitaSstepanov/tools/error"
+	"github.com/gosuit/e"
 )
 
 const (

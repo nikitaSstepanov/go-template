@@ -4,9 +4,10 @@ import (
 	"context"
 	"time"
 
-	"github.com/golang-jwt/jwt/v5"
 	"app/internal/entity"
-	e "github.com/nikitaSstepanov/tools/error"
+
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/gosuit/e"
 )
 
 const (

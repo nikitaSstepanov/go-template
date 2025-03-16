@@ -1,10 +1,10 @@
 package auth
 
 import (
+	"app/internal/entity"
 	"context"
 
-	"app/internal/entity"
-	e "github.com/nikitaSstepanov/tools/error"
+	"github.com/gosuit/e"
 	"golang.org/x/crypto/bcrypt"
 )
 
