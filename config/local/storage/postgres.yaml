@@ -1,0 +1,10 @@
+storage:
+  postgres:
+    username:        "admin"
+    host:            "localhost"
+    port:            5432
+    dbname:          "postgres"
+    password:        "${POSTGRES_PASSWORD}"
+    sslmode:         disable
+    migrations_run:  true
+    migrations_path: "./migrations"

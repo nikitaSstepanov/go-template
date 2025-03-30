@@ -1,0 +1,5 @@
+server:
+  url:             ":8080"
+  readTimeout:     5s
+  writeTimeout:    5s
+  shutdownTimeout: 5s

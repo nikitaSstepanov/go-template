@@ -1,12 +1,10 @@
 package middleware
 
-import "app/internal/usecase/pkg/auth"
-
 type Middleware struct {
 	auth AuthUseCase
 }
 
-func New(uc *auth.Auth) *Middleware {
+func New(uc AuthUseCase) *Middleware {
 	return &Middleware{
 		auth: uc,
 	}

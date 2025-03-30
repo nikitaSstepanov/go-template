@@ -1,0 +1,4 @@
+usecase:
+  jwt:
+    issuer:   "app"
+    audience: ["clients"]

@@ -10,10 +10,10 @@ import (
 )
 
 type Account struct {
-	usecase AccountUseCase
+	usecase UserUseCase
 }
 
-func New(uc AccountUseCase) *Account {
+func New(uc UserUseCase) *Account {
 	return &Account{
 		usecase: uc,
 	}

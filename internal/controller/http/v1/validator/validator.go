@@ -5,7 +5,7 @@ import (
 	"github.com/gosuit/e"
 )
 
-func Struct(s interface{}, args ...Arg) e.Error {
+func Struct(s any, args ...Arg) e.Error {
 	validate := validator.New()
 	if err := setupArgs(validate, args); err != nil {
 		return e.New("Incorrect data", e.BadInput, err)

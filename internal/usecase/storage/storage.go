@@ -19,8 +19,8 @@ type Storage struct {
 }
 
 type Config struct {
-	Postgres pg.Config `yaml:"postgres"`
-	Redis    rs.Config `yaml:"redis"`
+	Postgres pg.Config `confy:"postgres"`
+	Redis    rs.Config `confy:"redis"`
 }
 
 func New(c lec.Context, cfg *Config) *Storage {

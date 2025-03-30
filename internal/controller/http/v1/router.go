@@ -1,7 +1,6 @@
 package v1
 
 import (
-	_ "app/docs"
 	"app/internal/controller/http/v1/middleware"
 	"app/internal/controller/http/v1/pkg/account"
 	"app/internal/controller/http/v1/pkg/auth"
@@ -22,14 +21,14 @@ type Router struct {
 }
 
 type Config struct {
-	Swagger swagger.SwaggerSpec
+	Swagger swagger.SwaggerSpec `confy:"swagger"`
 }
 
 func New(uc *usecase.UseCase, cfg *Config) *Router {
 	swagger.SetSwaggerConfig(cfg.Swagger)
 
 	return &Router{
-		account: account.New(uc.Account),
+		account: account.New(uc.User),
 		auth:    auth.New(uc.Auth),
 		mid:     middleware.New(uc.Auth),
 	}
@@ -40,9 +39,10 @@ func (r *Router) InitRoutes(c lec.Context, h *gin.RouterGroup) *gin.RouterGroup 
 	{
 		router.Use(gins.InitLogger(c))
 
-		r.initSwaggerRoute(router)
 		account := r.initAccountRoutes(router)
 		r.initAuthRoutes(account)
+
+		r.initSwaggerRoute(router)
 	}
 
 	return router

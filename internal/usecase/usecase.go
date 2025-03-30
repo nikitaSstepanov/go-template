@@ -2,8 +2,8 @@ package usecase
 
 import (
 	"app/internal/usecase/mail"
-	"app/internal/usecase/pkg/account"
 	"app/internal/usecase/pkg/auth"
+	"app/internal/usecase/pkg/user"
 	"app/internal/usecase/storage"
 
 	gomail "github.com/gosuit/mail"
@@ -12,24 +12,24 @@ import (
 )
 
 type UseCase struct {
-	Account *account.Account
-	Auth    *auth.Auth
+	User *user.User
+	Auth *auth.Auth
 }
 
 type Config struct {
-	Jwt   auth.JwtOptions `yaml:"jwt"`
-	Mail  gomail.Config   `yaml:"mail"`
-	Coder coder.Config    `yaml:"coder"`
+	Jwt   auth.JwtOptions `confy:"jwt"`
+	Mail  gomail.Config   `confy:"mail"`
+	Coder coder.Config   
 }
 
 func New(storage *storage.Storage, cfg *Config) *UseCase {
 	return &UseCase{
-		Account: setupAccount(storage, cfg),
-		Auth:    setupAuth(storage, cfg),
+		User: setupAccount(storage, cfg),
+		Auth: setupAuth(storage, cfg),
 	}
 }
 
-func setupAccount(storage *storage.Storage, cfg *Config) *account.Account {
+func setupAccount(storage *storage.Storage, cfg *Config) *user.User {
 	jwt := auth.NewJwt(&cfg.Jwt)
 	mail := mail.New(&cfg.Mail)
 
@@ -38,13 +38,13 @@ func setupAccount(storage *storage.Storage, cfg *Config) *account.Account {
 		sl.Default().Fatal("Can`t init coder.", sl.ErrAttr(err))
 	}
 
-	return account.New(
-		&account.UseCases{
+	return user.New(
+		&user.UseCases{
 			Jwt:   jwt,
 			Mail:  mail,
 			Coder: coder,
 		},
-		&account.Storages{
+		&user.Storages{
 			User: storage.Users,
 			Code: storage.Codes,
 		},

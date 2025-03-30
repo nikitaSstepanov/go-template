@@ -7,43 +7,51 @@ import (
 	"app/internal/usecase"
 	"app/internal/usecase/storage"
 
+	"github.com/gosuit/confy"
 	"github.com/gosuit/httper"
 	"github.com/gosuit/sl"
-	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/joho/godotenv"
 )
 
 type Config struct {
-	Controller controller.Config `yaml:"controller"`
-	UseCase    usecase.Config    `yaml:"usecase"`
-	Storage    storage.Config    `yaml:"storage"`
-	Server     httper.ServerCfg  `yaml:"server"`
-	Logger     sl.Config         `yaml:"logger"`
+	Controller controller.Config `confy:"controller"`
+	UseCase    usecase.Config    `confy:"usecase"`
+	Storage    storage.Config    `confy:"storage"`
+	Server     httper.ServerCfg  `confy:"server"`
+	Logger     sl.Config         `confy:"logger"`
 }
 
 func getConfig() (*Config, error) {
-	if err := godotenv.Load(".env"); err != nil {
-		return nil, err
+	env := os.Getenv("ENVIRONMENT")
+
+	if env == "LOCAL" {
+		if err := godotenv.Load(".env"); err != nil {
+			return nil, err
+		}
 	}
 
-	path := getConfigPath()
+	path := getConfigPath(env)
 
 	var cfg Config
 
-	err := cleanenv.ReadConfig(path, &cfg)
-	if err != nil {
+	if err := confy.Get(path, &cfg); err != nil {
 		return nil, err
 	}
 
 	return &cfg, nil
 }
 
-func getConfigPath() string {
-	path := os.Getenv("CONFIG_PATH")
+func getConfigPath(env string) string {
+	switch env {
 
-	if path == "" {
-		return "config/local.yaml"
+	case "LOCAL":
+		return "config/local"
+
+	case "DOCKER":
+		return "config/local"
+
+	default:
+		return "config/local"
+
 	}
-
-	return path
 }

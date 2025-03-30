@@ -1,0 +1,6 @@
+storage:
+  redis:
+    user: "admin"
+    host: "redis"
+    port: 6379
+    db:   0 

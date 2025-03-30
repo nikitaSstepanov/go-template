@@ -1,12 +1,11 @@
 package controller
 
 import (
-	"net/http"
-
 	v1 "app/internal/controller/http/v1"
 	"app/internal/usecase"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gosuit/httper"
 	"github.com/gosuit/lec"
 )
 
@@ -16,8 +15,8 @@ type Controller struct {
 }
 
 type Config struct {
-	V1   v1.Config `yaml:"v1"`
-	Mode string    `yaml:"mode" env:"MODE" env-default:"DEBUG"`
+	V1   v1.Config `confy:"v1"`
+	Mode string    `confy:"mode" env:"MODE" env-default:"DEBUG"`
 }
 
 func New(uc *usecase.UseCase, cfg *Config) *Controller {
@@ -33,7 +32,7 @@ func (c *Controller) InitRoutes(ctx lec.Context) *gin.Engine {
 	router := gin.New()
 
 	router.GET("/ping", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, "pong")
+		ctx.JSON(httper.StatusOK, "pong")
 	})
 
 	api := router.Group("/api")

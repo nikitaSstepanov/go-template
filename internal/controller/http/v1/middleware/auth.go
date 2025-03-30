@@ -3,25 +3,9 @@ package middleware
 import (
 	"strings"
 
-	"app/internal/usecase/pkg/auth"
-
 	"github.com/gin-gonic/gin"
-	"github.com/gosuit/e"
 	"github.com/gosuit/gins"
 )
-
-const (
-	bearerType = "Bearer"
-)
-
-var (
-	foundErr  = e.New("Authorization header wasn`t found", e.Unauthorize)
-	bearerErr = e.New("Token is not bearer", e.Unauthorize)
-)
-
-type AuthUseCase interface {
-	ValidateToken(jwtString string, isRefresh bool) (*auth.Claims, e.Error)
-}
 
 func (m *Middleware) CheckAccess() gin.HandlerFunc {
 	return func(ctx *gin.Context) {

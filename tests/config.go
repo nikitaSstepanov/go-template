@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/ilyakaznacheev/cleanenv"
+	"github.com/gosuit/confy"
 )
 
 var testCfg = newTestConf()
@@ -29,7 +29,7 @@ func newTestConf() TestConfig {
 	var cfg = TestConfig{}
 	path := getConfigPath()
 
-	if err := cleanenv.ReadConfig(path, &cfg); err != nil {
+	if err := confy.Get(path, &cfg); err != nil {
 		panic(fmt.Sprintf("Failed to read test config: %s", err.Error()))
 	}
 

@@ -1,24 +1,24 @@
 module app
 
-go 1.24.0
+go 1.24.1
 
 require (
 	github.com/Masterminds/squirrel v1.5.4
 	github.com/brianvoe/gofakeit v3.18.0+incompatible
 	github.com/gavv/httpexpect/v2 v2.16.0
 	github.com/gin-gonic/gin v1.10.0
-	github.com/go-playground/validator/v10 v10.25.0
+	github.com/go-playground/validator/v10 v10.26.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
-	github.com/gosuit/e v1.0.3
-	github.com/gosuit/gins v1.0.1
-	github.com/gosuit/httper v1.0.1
-	github.com/gosuit/lec v1.0.3
+	github.com/gosuit/confy v1.0.5
+	github.com/gosuit/e v1.0.4
+	github.com/gosuit/gins v1.0.2
+	github.com/gosuit/httper v1.0.2
+	github.com/gosuit/lec v1.0.4
 	github.com/gosuit/mail v1.0.1
 	github.com/gosuit/pg v1.0.1
 	github.com/gosuit/rs v1.0.1
-	github.com/gosuit/sl v1.0.4
+	github.com/gosuit/sl v1.0.5
 	github.com/gosuit/utils v1.0.2
-	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/joho/godotenv v1.5.1
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.0
@@ -26,7 +26,7 @@ require (
 )
 
 require (
-	github.com/BurntSushi/toml v1.2.1 // indirect
+	github.com/BurntSushi/toml v1.5.0 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
@@ -78,7 +78,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/pressly/goose v2.7.0+incompatible // indirect
 	github.com/redis/go-redis/v9 v9.7.1 // indirect
-	github.com/rogpeppe/go-internal v1.14.1 // indirect
 	github.com/sanity-io/litter v1.5.5 // indirect
 	github.com/sergi/go-diff v1.3.1 // indirect
 	github.com/stretchr/testify v1.10.0 // indirect
@@ -94,7 +93,7 @@ require (
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
 	golang.org/x/arch v0.15.0 // indirect
 	golang.org/x/crypto v0.36.0 // indirect
-	golang.org/x/net v0.37.0 // indirect
+	golang.org/x/net v0.38.0 // indirect
 	golang.org/x/sync v0.12.0 // indirect
 	golang.org/x/sys v0.31.0 // indirect
 	golang.org/x/text v0.23.0 // indirect
@@ -107,5 +106,4 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	moul.io/http2curl/v2 v2.3.0 // indirect
-	olympos.io/encoding/edn v0.0.0-20201019073823-d3554ca0b0a3 // indirect
 )

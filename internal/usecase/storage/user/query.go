@@ -8,7 +8,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 )
 
-func idQuery(id uint64) (string, []interface{}) {
+func idQuery(id uint64) (string, []any) {
 	builder := sq.Select("*").From(usersTable).
 		Where(sq.Eq{"id": id}).PlaceholderFormat(sq.Dollar)
 
@@ -17,7 +17,7 @@ func idQuery(id uint64) (string, []interface{}) {
 	return query, args
 }
 
-func emailQuery(email string) (string, []interface{}) {
+func emailQuery(email string) (string, []any) {
 	builder := sq.Select("*").From(usersTable).
 		Where(sq.Eq{"email": email}).PlaceholderFormat(sq.Dollar)
 
@@ -26,7 +26,7 @@ func emailQuery(email string) (string, []interface{}) {
 	return query, args
 }
 
-func createQuery(user *entity.User) (string, []interface{}) {
+func createQuery(user *entity.User) (string, []any) {
 	builder := sq.Insert(usersTable).
 		Columns(
 			"email", "name", "password", "age",
@@ -41,7 +41,7 @@ func createQuery(user *entity.User) (string, []interface{}) {
 	return query, args
 }
 
-func updateQuery(user *entity.User) (string, []interface{}) {
+func updateQuery(user *entity.User) (string, []any) {
 	builder := sq.Update(usersTable)
 
 	if user.Email != "" {
@@ -67,7 +67,7 @@ func updateQuery(user *entity.User) (string, []interface{}) {
 	return query, args
 }
 
-func verifyQuery(id uint64, verified bool) (string, []interface{}) {
+func verifyQuery(id uint64, verified bool) (string, []any) {
 	builder := sq.Update(usersTable).
 		Set("verified", verified).
 		Where(sq.Eq{"id": id}).PlaceholderFormat(sq.Dollar)
@@ -77,7 +77,7 @@ func verifyQuery(id uint64, verified bool) (string, []interface{}) {
 	return query, args
 }
 
-func deleteQuery(id uint64) (string, []interface{}) {
+func deleteQuery(id uint64) (string, []any) {
 	builder := sq.Delete(usersTable).
 		Where(sq.Eq{"id": id}).PlaceholderFormat(sq.Dollar)
 

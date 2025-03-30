@@ -26,7 +26,6 @@ type DeleteUser struct {
 	Password string `json:"password" validate:"min=8,max=50,password"`
 }
 
-
 type Message struct {
 	Message string `json:"message"`
 }

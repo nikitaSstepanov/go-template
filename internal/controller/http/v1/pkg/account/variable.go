@@ -30,7 +30,7 @@ var (
 	okMsg       = resp.NewMessage("Ok.")
 )
 
-type AccountUseCase interface {
+type UserUseCase interface {
 	Get(ctx lec.Context, userId uint64) (*entity.User, e.Error)
 	Create(ctx lec.Context, user *entity.User) (*entity.Tokens, e.Error)
 	Update(ctx lec.Context, user *entity.User, pass string) e.Error

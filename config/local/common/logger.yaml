@@ -1,0 +1,6 @@
+logger:
+  type:        "dev"
+  level:       "debug"
+  add_source:  true
+  is_json:     true
+  set_default: true

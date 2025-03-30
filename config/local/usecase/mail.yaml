@@ -1,0 +1,6 @@
+usecase:
+  mail:
+    host:     ""
+    port:     0
+    username: ""
+    identity: ""
