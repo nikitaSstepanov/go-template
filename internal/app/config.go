@@ -48,7 +48,7 @@ func getConfigPath(env string) string {
 		return "config/local"
 
 	case "DOCKER":
-		return "config/local"
+		return "config/docker"
 
 	default:
 		return "config/local"

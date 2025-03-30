@@ -14,7 +14,7 @@ type User struct {
 	code  CodeStorage
 	jwt   JwtUseCase
 	mail  MailUseCase
-	coder *coder.Coder
+	coder coder.Coder
 }
 
 func New(uc *UseCases, store *Storages) *User {

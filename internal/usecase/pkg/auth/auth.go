@@ -11,7 +11,7 @@ import (
 type Auth struct {
 	user  UserStorage
 	jwt   *Jwt
-	coder *coder.Coder
+	coder coder.Coder
 }
 
 func New(uc *UseCases, store *Storages) *Auth {

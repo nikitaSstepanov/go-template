@@ -20,6 +20,4 @@ COPY ./config ./config
 
 COPY ./migrations ./migrations
 
-COPY .env .env
-
 CMD [ "./app" ]

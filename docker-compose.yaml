@@ -1,0 +1,66 @@
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: "admin"
+      POSTGRES_PASSWORD: "root"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - internal
+
+  redis:
+    container_name: redis
+    image: redis:alpine
+    environment:
+      REDIS_PASSWORD: "root"
+      REDIS_USER: "admin"
+      REDIS_USER_PASSWORD: "root"
+      REDIS_DATABASES: 0
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "root", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    volumes:
+      - rsdata:/data
+    networks:
+      - internal
+
+  app:
+    container_name: app
+    build:
+      context: .
+      dockerfile: dockerfile
+    environment:
+      ENVIRONMENT: "DOCKER"
+      REDIS_PASSWORD: "root"
+      POSTGRES_PASSWORD: "root"
+      JWT_ACCESS_SECRET: "root"
+      JWT_REFRESH_SECRET: "root"
+      CODER_ENCRYPT_SECRET: "cc4e4b76a835c147"
+      MAIL_PASSWORD: "mQsyZcwTNGznzF7gBFwg"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - internal
+    ports:
+      - 8080:80
+
+networks:
+  internal:
+
+volumes:
+  rsdata:
+  pgdata:

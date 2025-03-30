@@ -9,6 +9,8 @@ definitions:
         type: integer
       name:
         type: string
+      verified:
+        type: boolean
     type: object
   dto.CreateUser:
     properties:
@@ -30,18 +32,6 @@ definitions:
     - name
     - password
     type: object
-  dto.DeleteUser:
-    properties:
-      password:
-        maxLength: 50
-        minLength: 8
-        type: string
-    type: object
-  dto.JsonError:
-    properties:
-      error:
-        type: string
-    type: object
   dto.Login:
     properties:
       email:
@@ -53,11 +43,6 @@ definitions:
     required:
     - email
     - password
-    type: object
-  dto.Message:
-    properties:
-      message:
-        type: string
     type: object
   dto.Token:
     properties:
@@ -84,6 +69,16 @@ definitions:
         minLength: 8
         type: string
     type: object
+  resp.JsonError:
+    properties:
+      error:
+        type: string
+    type: object
+  resp.Message:
+    properties:
+      message:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
@@ -91,7 +86,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Returns user information based on their ID.
+      description: Returns user information.
       produces:
       - application/json
       responses:
@@ -99,19 +94,23 @@ paths:
           description: Successful response
           schema:
             $ref: '#/definitions/dto.Account'
+        "401":
+          description: Authorization header wasn't found, Token is not bearer
+          schema:
+            $ref: '#/definitions/resp.JsonError'
         "404":
           description: This user wasn`t found.
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
         "500":
           description: Something going wrong...
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
       security:
       - Bearer: []
-      summary: Retrieve user by ID
+      summary: Retrieve user own account
       tags:
-      - account
+      - Account
   /account/auth/login:
     post:
       consumes:
@@ -134,22 +133,22 @@ paths:
         "400":
           description: Incorrect data
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
         "401":
           description: Incorrect email or password
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
         "404":
           description: This user wasn't found.
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
         "500":
           description: Something going wrong...
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
       summary: Log in a user
       tags:
-      - auth
+      - Auth
   /account/auth/logout:
     post:
       consumes:
@@ -161,16 +160,16 @@ paths:
         "200":
           description: Logout success.
           schema:
-            $ref: '#/definitions/dto.Message'
+            $ref: '#/definitions/resp.Message'
         "500":
           description: Something going wrong...
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
       security:
       - Bearer: []
       summary: Log out a user
       tags:
-      - auth
+      - Auth
   /account/auth/refresh:
     get:
       consumes:
@@ -186,58 +185,51 @@ paths:
         "401":
           description: Token is invalid
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
         "404":
           description: Your token wasn't found., This user wasn't found.
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
         "500":
           description: Something going wrong...
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
       summary: Refresh user tokens
       tags:
-      - auth
+      - Auth
   /account/delete:
     delete:
       consumes:
       - application/json
       description: Deletes a user account by ID.
-      parameters:
-      - description: Delete User Request
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/dto.DeleteUser'
       produces:
       - application/json
       responses:
         "200":
           description: Ok.
           schema:
-            $ref: '#/definitions/dto.Message'
+            $ref: '#/definitions/resp.Message'
         "400":
           description: Incorrect data
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
         "401":
           description: Authorization header wasn`t found, Token is not bearer
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
         "403":
           description: This resource is forbidden
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
         "500":
           description: Something going wrong...
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
       security:
       - Bearer: []
       summary: Delete user account
       tags:
-      - account
+      - Account
   /account/edit:
     patch:
       consumes:
@@ -256,36 +248,36 @@ paths:
         "200":
           description: Updated.
           schema:
-            $ref: '#/definitions/dto.Message'
+            $ref: '#/definitions/resp.Message'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
         "401":
           description: Authorization header wasn't found, Token is not bearer
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
         "403":
           description: This resource is forbidden
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
         "404":
           description: This user wasn't found
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
         "409":
           description: User with this email already exists
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
         "500":
           description: Something going wrong...
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
       security:
       - Bearer: []
       summary: Update user information
       tags:
-      - account
+      - Account
   /account/new:
     post:
       consumes:
@@ -308,22 +300,22 @@ paths:
         "400":
           description: Incorrect data
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
         "403":
           description: Incorrect password
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
         "409":
           description: User with this email already exist
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
         "500":
           description: Something going wrong...
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
       summary: Create User
       tags:
-      - account
+      - Account
   /account/verify/confirm/{code}:
     get:
       consumes:
@@ -343,32 +335,32 @@ paths:
         "200":
           description: Verified.
           schema:
-            $ref: '#/definitions/dto.Message'
+            $ref: '#/definitions/resp.Message'
         "400":
           description: Your activation code is wrong., Bad string length
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
         "401":
           description: Authorization header wasn`t found, Token is not bearer
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
         "403":
           description: This resource is forbidden
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
         "404":
           description: This code wasn`t found.
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
         "500":
           description: Something going wrong...
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
       security:
       - Bearer: []
       summary: Verify user activation code
       tags:
-      - account
+      - Account
   /account/verify/resend:
     get:
       consumes:
@@ -380,32 +372,32 @@ paths:
         "200":
           description: Ok.
           schema:
-            $ref: '#/definitions/dto.Message'
+            $ref: '#/definitions/resp.Message'
         "400":
           description: Incorrect data
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
         "403":
           description: This resource is forbidden
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
         "404":
           description: User not found
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
         "500":
           description: Something going wrong...
           schema:
-            $ref: '#/definitions/dto.JsonError'
+            $ref: '#/definitions/resp.JsonError'
       security:
       - Bearer: []
       summary: Resend verification code
       tags:
-      - account
+      - Account
 securityDefinitions:
   Bearer:
     in: header

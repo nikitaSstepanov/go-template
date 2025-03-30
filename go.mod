@@ -9,16 +9,16 @@ require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-playground/validator/v10 v10.26.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
-	github.com/gosuit/confy v1.0.5
+	github.com/gosuit/confy v1.0.6
 	github.com/gosuit/e v1.0.4
 	github.com/gosuit/gins v1.0.2
-	github.com/gosuit/httper v1.0.2
+	github.com/gosuit/httper v1.0.3
 	github.com/gosuit/lec v1.0.4
-	github.com/gosuit/mail v1.0.1
-	github.com/gosuit/pg v1.0.1
-	github.com/gosuit/rs v1.0.1
-	github.com/gosuit/sl v1.0.5
-	github.com/gosuit/utils v1.0.2
+	github.com/gosuit/mail v1.0.2
+	github.com/gosuit/pg v1.0.2
+	github.com/gosuit/rs v1.0.2
+	github.com/gosuit/sl v1.0.6
+	github.com/gosuit/utils v1.0.3
 	github.com/joho/godotenv v1.5.1
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.0

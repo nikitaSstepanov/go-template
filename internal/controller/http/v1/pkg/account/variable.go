@@ -15,11 +15,6 @@ const (
 	created = http.StatusCreated
 	badReq  = http.StatusBadRequest
 	unauth  = http.StatusUnauthorized
-
-	cookieName = "refreshToken"
-	cookieAge  = 259200
-	cookiePath = "/"
-	cookieHost = "localhost"
 )
 
 var (

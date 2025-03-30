@@ -5,3 +5,5 @@ storage:
     port:     5432
     dbname:   "postgres"
     sslmode:  "disable"
+    migrations_run: true
+    migrations_path: "./migrations"

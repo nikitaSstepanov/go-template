@@ -11,7 +11,7 @@ import (
 
 type UseCases struct {
 	Jwt   *Jwt
-	Coder *coder.Coder
+	Coder coder.Coder
 }
 
 type Storages struct {

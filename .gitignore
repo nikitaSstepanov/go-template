@@ -1,4 +1,3 @@
-deploy/docker/volumes
 **/.DS_Store
 **/.env
 **/bin

@@ -7,10 +7,11 @@ import (
 
 func DtoUser(user *entity.User) *dto.Account {
 	return &dto.Account{
-		Id:    user.Id,
-		Email: user.Email,
-		Name:  user.Name,
-		Age:   user.Age,
+		Id:       user.Id,
+		Email:    user.Email,
+		Name:     user.Name,
+		Age:      user.Age,
+		Verified: user.Verified,
 	}
 }
 
@@ -29,11 +30,5 @@ func EntityUpdate(update dto.UpdateUser) *entity.User {
 		Name:     update.Name,
 		Password: update.Password,
 		Age:      update.Age,
-	}
-}
-
-func EntityDelete(delete dto.DeleteUser) *entity.User {
-	return &entity.User{
-		Password: delete.Password,
 	}
 }

@@ -5,9 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/brianvoe/gofakeit"
 	"github.com/gavv/httpexpect/v2"
-	"app/internal/controller/http/v1/dto"
 )
 
 func TestDeleteAccount(t *testing.T) {
@@ -46,13 +44,6 @@ func TestDeleteAccount(t *testing.T) {
 			IsError:  true,
 		},
 		{
-			TestName: "Invalid password",
-			Token:    fmt.Sprintf("Bearer %s", token),
-			Password: gofakeit.Password(true, true, true, true, false, 10),
-			Status:   http.StatusForbidden,
-			IsError:  true,
-		},
-		{
 			TestName: "Success",
 			Token:    fmt.Sprintf("Bearer %s", token),
 			Password: user.Password,
@@ -69,13 +60,11 @@ func TestDeleteAccount(t *testing.T) {
 					e.DELETE("/delete").Expect().Status(tc.Status).JSON().Object().ContainsKey("error")
 				} else {
 					e.DELETE("/delete").WithHeader("Authorization", tc.Token).
-						WithJSON(dto.DeleteUser{Password: tc.Password}).
 						Expect().Status(tc.Status).JSON().Object().
 						ContainsKey("error")
 				}
 			} else {
 				e.DELETE("/delete").WithHeader("Authorization", tc.Token).
-					WithJSON(dto.DeleteUser{Password: tc.Password}).
 					Expect().Status(tc.Status).JSON().Object().
 					ContainsKey("message")
 			}

@@ -1,0 +1,9 @@
+controller:
+  v1:
+    refresh_cookie:
+      name:      "refreshToken" 
+      age:       259200
+      path:      "/"
+      host:      "${DOMAIN:localhost}"
+      secure:    false
+      http_only: true

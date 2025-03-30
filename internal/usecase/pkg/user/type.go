@@ -12,7 +12,7 @@ import (
 type UseCases struct {
 	Jwt   JwtUseCase
 	Mail  MailUseCase
-	Coder *coder.Coder
+	Coder coder.Coder
 }
 
 type Storages struct {

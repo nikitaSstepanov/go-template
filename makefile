@@ -11,6 +11,3 @@ unit-test:
 	
 gen-swagger-docs:
 	swag init -g cmd/app/main.go
-
-docker:
-	docker compose --file ./deploy/docker/docker-compose.yaml --env-file .env up --detach

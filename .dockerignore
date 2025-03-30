@@ -1,5 +1,4 @@
 .dockerignore
 dockerfile
 .gitignore
-deploy
 tests
