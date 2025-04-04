@@ -3,6 +3,7 @@ package usecase
 import (
 	"app/internal/usecase/mail"
 	"app/internal/usecase/pkg/auth"
+	"app/internal/usecase/pkg/auth/jwt"
 	"app/internal/usecase/pkg/user"
 	"app/internal/usecase/storage"
 
@@ -17,9 +18,9 @@ type UseCase struct {
 }
 
 type Config struct {
-	Jwt   auth.JwtOptions `confy:"jwt"`
-	Mail  gomail.Config   `confy:"mail"`
-	Coder coder.Config   
+	Jwt   jwt.JwtOptions `confy:"jwt"`
+	Mail  gomail.Config  `confy:"mail"`
+	Coder coder.Config   `confy:"coder"`
 }
 
 func New(storage *storage.Storage, cfg *Config) *UseCase {
@@ -30,7 +31,7 @@ func New(storage *storage.Storage, cfg *Config) *UseCase {
 }
 
 func setupAccount(storage *storage.Storage, cfg *Config) *user.User {
-	jwt := auth.NewJwt(&cfg.Jwt)
+	jwt := jwt.New(&cfg.Jwt)
 	mail := mail.New(&cfg.Mail)
 
 	coder, err := coder.New(&cfg.Coder)
@@ -52,7 +53,7 @@ func setupAccount(storage *storage.Storage, cfg *Config) *user.User {
 }
 
 func setupAuth(storage *storage.Storage, cfg *Config) *auth.Auth {
-	jwt := auth.NewJwt(&cfg.Jwt)
+	jwt := jwt.New(&cfg.Jwt)
 
 	coder, err := coder.New(&cfg.Coder)
 	if err != nil {

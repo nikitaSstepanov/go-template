@@ -42,35 +42,11 @@ func createQuery(user *entity.User) (string, []any) {
 }
 
 func updateQuery(user *entity.User) (string, []any) {
-	builder := sq.Update(usersTable)
-
-	if user.Email != "" {
-		builder = builder.Set("email", user.Email)
-	}
-
-	if user.Name != "" {
-		builder = builder.Set("name", user.Name)
-	}
-
-	if user.Password != "" {
-		builder = builder.Set("password", user.Password)
-	}
-
-	if user.Age != 0 {
-		builder = builder.Set("age", user.Age)
-	}
-
-	builder = builder.Where(sq.Eq{"id": user.Id}).PlaceholderFormat(sq.Dollar)
-
-	query, args, _ := builder.ToSql()
-
-	return query, args
-}
-
-func verifyQuery(id uint64, verified bool) (string, []any) {
 	builder := sq.Update(usersTable).
-		Set("verified", verified).
-		Where(sq.Eq{"id": id}).PlaceholderFormat(sq.Dollar)
+		Set("email", user.Email).Set("name", user.Name).
+		Set("password", user.Password).Set("age", user.Age).
+		Set("role", user.Role).Set("verified", user.Verified).
+		Where(sq.Eq{"id": user.Id}).PlaceholderFormat(sq.Dollar)
 
 	query, args, _ := builder.ToSql()
 

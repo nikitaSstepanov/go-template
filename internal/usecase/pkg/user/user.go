@@ -75,7 +75,12 @@ func (u *User) Create(ctx lec.Context, user *entity.User) (*entity.Tokens, e.Err
 }
 
 func (u *User) Update(ctx lec.Context, user *entity.User, pass string) e.Error {
-	if user.Email != "" {
+	old, err := u.user.GetById(ctx, user.Id)
+	if err != nil {
+		return err
+	}
+
+	if user.Email != old.Email {
 		candidate, err := u.user.GetByEmail(ctx, user.Email)
 		if err != nil && err.GetCode() != e.NotFound {
 			return err
@@ -87,20 +92,12 @@ func (u *User) Update(ctx lec.Context, user *entity.User, pass string) e.Error {
 
 		user.Verified = false
 
-		err = u.user.Verify(ctx, user)
-		if err != nil {
-			return err
-		}
-
 		go u.sendCode(ctx, user)
+	} else {
+		user.Verified = old.Verified
 	}
 
 	if user.Password != "" {
-		old, err := u.user.GetById(ctx, user.Id)
-		if err != nil {
-			return err
-		}
-
 		if err := u.coder.CompareHash(old.Password, pass); err != nil {
 			return badPassErr.WithErr(err)
 		}
@@ -114,7 +111,20 @@ func (u *User) Update(ctx lec.Context, user *entity.User, pass string) e.Error {
 		user.Password = hash
 	}
 
+	user.Role = old.Role
+
 	return u.user.Update(ctx, user)
+}
+
+func (u *User) SetRole(ctx lec.Context, user *entity.User) e.Error {
+	old, err := u.user.GetById(ctx, user.Id)
+	if err != nil {
+		return err
+	}
+
+	old.Role = user.Role
+
+	return u.user.Update(ctx, old)
 }
 
 func (u *User) Verify(ctx lec.Context, id uint64, code string) e.Error {
@@ -132,12 +142,14 @@ func (u *User) Verify(ctx lec.Context, id uint64, code string) e.Error {
 		return err
 	}
 
-	user := &entity.User{
-		Id:       id,
-		Verified: true,
+	user, err := u.user.GetById(ctx, id)
+	if err != nil {
+		return err
 	}
 
-	return u.user.Verify(ctx, user)
+	user.Verified = true
+
+	return u.user.Update(ctx, user)
 }
 
 func (u *User) ResendCode(ctx lec.Context, userId uint64) e.Error {
@@ -151,13 +163,13 @@ func (u *User) ResendCode(ctx lec.Context, userId uint64) e.Error {
 	return nil
 }
 
-func (u *User) Delete(ctx lec.Context, user *entity.User) e.Error {
-	_, err := u.user.GetById(ctx, user.Id)
+func (u *User) Delete(ctx lec.Context, id uint64) e.Error {
+	_, err := u.user.GetById(ctx, id)
 	if err != nil {
 		return err
 	}
 
-	return u.user.Delete(ctx, user)
+	return u.user.Delete(ctx, id)
 }
 
 func (u *User) sendCode(ctx lec.Context, user *entity.User) {

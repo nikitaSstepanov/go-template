@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/account/": {
+        "/account": {
             "get": {
                 "security": [
                     {
@@ -48,12 +48,6 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "This user wasn` + "`" + `t found.",
-                        "schema": {
-                            "$ref": "#/definitions/resp.JsonError"
-                        }
-                    },
-                    "500": {
-                        "description": "Something going wrong...",
                         "schema": {
                             "$ref": "#/definitions/resp.JsonError"
                         }
@@ -109,12 +103,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/resp.JsonError"
                         }
-                    },
-                    "500": {
-                        "description": "Something going wrong...",
-                        "schema": {
-                            "$ref": "#/definitions/resp.JsonError"
-                        }
                     }
                 }
             }
@@ -126,7 +114,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Logs out a user by invalidating the session",
+                "description": "Logs out a user by delete the session",
                 "consumes": [
                     "application/json"
                 ],
@@ -142,12 +130,6 @@ const docTemplate = `{
                         "description": "Logout success.",
                         "schema": {
                             "$ref": "#/definitions/resp.Message"
-                        }
-                    },
-                    "500": {
-                        "description": "Something going wrong...",
-                        "schema": {
-                            "$ref": "#/definitions/resp.JsonError"
                         }
                     }
                 }
@@ -184,12 +166,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/resp.JsonError"
                         }
-                    },
-                    "500": {
-                        "description": "Something going wrong...",
-                        "schema": {
-                            "$ref": "#/definitions/resp.JsonError"
-                        }
                     }
                 }
             }
@@ -201,7 +177,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Deletes a user account by ID.",
+                "description": "Deletes a user account.",
                 "consumes": [
                     "application/json"
                 ],
@@ -219,26 +195,8 @@ const docTemplate = `{
                             "$ref": "#/definitions/resp.Message"
                         }
                     },
-                    "400": {
-                        "description": "Incorrect data",
-                        "schema": {
-                            "$ref": "#/definitions/resp.JsonError"
-                        }
-                    },
                     "401": {
                         "description": "Authorization header wasn` + "`" + `t found, Token is not bearer",
-                        "schema": {
-                            "$ref": "#/definitions/resp.JsonError"
-                        }
-                    },
-                    "403": {
-                        "description": "This resource is forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/resp.JsonError"
-                        }
-                    },
-                    "500": {
-                        "description": "Something going wrong...",
                         "schema": {
                             "$ref": "#/definitions/resp.JsonError"
                         }
@@ -253,7 +211,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Updates the user's information including password.",
+                "description": "Updates the user's role. Available only for ADMIN",
                 "consumes": [
                     "application/json"
                 ],
@@ -263,15 +221,15 @@ const docTemplate = `{
                 "tags": [
                     "Account"
                 ],
-                "summary": "Update user information",
+                "summary": "Update user role",
                 "parameters": [
                     {
-                        "description": "User update data",
+                        "description": "User set role data",
                         "name": "body",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.UpdateUser"
+                            "$ref": "#/definitions/dto.SetRole"
                         }
                     }
                 ],
@@ -283,7 +241,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Incorrect data.",
                         "schema": {
                             "$ref": "#/definitions/resp.JsonError"
                         }
@@ -305,88 +263,18 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/resp.JsonError"
                         }
-                    },
-                    "409": {
-                        "description": "User with this email already exists",
-                        "schema": {
-                            "$ref": "#/definitions/resp.JsonError"
-                        }
-                    },
-                    "500": {
-                        "description": "Something going wrong...",
-                        "schema": {
-                            "$ref": "#/definitions/resp.JsonError"
-                        }
                     }
                 }
             }
         },
-        "/account/new": {
-            "post": {
-                "description": "Creates a new user and returns access tokens.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Account"
-                ],
-                "summary": "Create User",
-                "parameters": [
-                    {
-                        "description": "Data for creating a user",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.CreateUser"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful response with token",
-                        "schema": {
-                            "$ref": "#/definitions/dto.Token"
-                        }
-                    },
-                    "400": {
-                        "description": "Incorrect data",
-                        "schema": {
-                            "$ref": "#/definitions/resp.JsonError"
-                        }
-                    },
-                    "403": {
-                        "description": "Incorrect password",
-                        "schema": {
-                            "$ref": "#/definitions/resp.JsonError"
-                        }
-                    },
-                    "409": {
-                        "description": "User with this email already exist",
-                        "schema": {
-                            "$ref": "#/definitions/resp.JsonError"
-                        }
-                    },
-                    "500": {
-                        "description": "Something going wrong...",
-                        "schema": {
-                            "$ref": "#/definitions/resp.JsonError"
-                        }
-                    }
-                }
-            }
-        },
-        "/account/verify/confirm/{code}": {
-            "get": {
+        "/account/edit/verify/confirm/{code}": {
+            "patch": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Verifies the provided activation code for the user.",
+                "description": "Verifies user with the provided activation code.",
                 "consumes": [
                     "application/json"
                 ],
@@ -396,7 +284,7 @@ const docTemplate = `{
                 "tags": [
                     "Account"
                 ],
-                "summary": "Verify user activation code",
+                "summary": "Verify user",
                 "parameters": [
                     {
                         "maxLength": 6,
@@ -438,17 +326,11 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/resp.JsonError"
                         }
-                    },
-                    "500": {
-                        "description": "Something going wrong...",
-                        "schema": {
-                            "$ref": "#/definitions/resp.JsonError"
-                        }
                     }
                 }
             }
         },
-        "/account/verify/resend": {
+        "/account/edit/verify/resend": {
             "get": {
                 "security": [
                     {
@@ -496,9 +378,55 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/resp.JsonError"
                         }
+                    }
+                }
+            }
+        },
+        "/account/new": {
+            "post": {
+                "description": "Creates a new account and returns access tokens.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Create account",
+                "parameters": [
+                    {
+                        "description": "Data for creating a user",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateUser"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response with token",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Token"
+                        }
                     },
-                    "500": {
-                        "description": "Something going wrong...",
+                    "400": {
+                        "description": "Incorrect data",
+                        "schema": {
+                            "$ref": "#/definitions/resp.JsonError"
+                        }
+                    },
+                    "403": {
+                        "description": "Incorrect password",
+                        "schema": {
+                            "$ref": "#/definitions/resp.JsonError"
+                        }
+                    },
+                    "409": {
+                        "description": "User with this email already exist",
                         "schema": {
                             "$ref": "#/definitions/resp.JsonError"
                         }
@@ -572,6 +500,25 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.SetRole": {
+            "type": "object",
+            "required": [
+                "role",
+                "user_id"
+            ],
+            "properties": {
+                "role": {
+                    "type": "string",
+                    "enum": [
+                        "USER",
+                        "ADMIN"
+                    ]
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "dto.Token": {
             "type": "object",
             "properties": {
@@ -582,6 +529,11 @@ const docTemplate = `{
         },
         "dto.UpdateUser": {
             "type": "object",
+            "required": [
+                "age",
+                "email",
+                "name"
+            ],
             "properties": {
                 "age": {
                     "type": "integer",
@@ -595,7 +547,7 @@ const docTemplate = `{
                     "type": "string",
                     "minLength": 1
                 },
-                "oldPassword": {
+                "old_password": {
                     "type": "string",
                     "maxLength": 50,
                     "minLength": 8

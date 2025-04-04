@@ -2,6 +2,7 @@ package auth
 
 import (
 	"app/internal/entity"
+	"app/internal/usecase/pkg/auth/jwt"
 
 	"github.com/gosuit/e"
 	"github.com/gosuit/lec"
@@ -10,7 +11,7 @@ import (
 
 type Auth struct {
 	user  UserStorage
-	jwt   *Jwt
+	jwt   JwtUseCase
 	coder coder.Coder
 }
 
@@ -83,6 +84,6 @@ func (a *Auth) Refresh(ctx lec.Context, refresh string) (*entity.Tokens, e.Error
 	return result, nil
 }
 
-func (a *Auth) ValidateToken(jwtString string, isRefresh bool) (*Claims, e.Error) {
+func (a *Auth) ValidateToken(jwtString string, isRefresh bool) (*jwt.Claims, e.Error) {
 	return a.jwt.ValidateToken(jwtString, isRefresh)
 }

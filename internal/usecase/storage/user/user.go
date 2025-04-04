@@ -2,6 +2,8 @@ package user
 
 import (
 	"app/internal/entity"
+	"app/internal/entity/types"
+	"fmt"
 
 	"github.com/gosuit/e"
 	"github.com/gosuit/lec"
@@ -107,6 +109,8 @@ func (u *User) Create(ctx lec.Context, user *entity.User) e.Error {
 			WithErr(err)
 	}
 
+	user.Role = types.USER
+
 	err = u.redis.Set(ctx, redisKey(user.Id), user, redisExpires).Err()
 	if err != nil {
 		return e.InternalErr.
@@ -119,7 +123,9 @@ func (u *User) Create(ctx lec.Context, user *entity.User) e.Error {
 
 func (u *User) Update(ctx lec.Context, user *entity.User) e.Error {
 	query, args := updateQuery(user)
-
+	fmt.Println(query)
+	fmt.Println(args...)
+	fmt.Println(user)
 	tx, err := u.postgres.Begin(ctx)
 	if err != nil {
 		return e.InternalErr.
@@ -147,11 +153,6 @@ func (u *User) Update(ctx lec.Context, user *entity.User) e.Error {
 			WithErr(err)
 	}
 
-	user, getErr := u.GetById(ctx, user.Id)
-	if getErr != nil {
-		return getErr
-	}
-
 	err = u.redis.Set(ctx, redisKey(user.Id), user, redisExpires).Err()
 	if err != nil {
 		return e.InternalErr.
@@ -162,53 +163,8 @@ func (u *User) Update(ctx lec.Context, user *entity.User) e.Error {
 	return nil
 }
 
-func (u *User) Verify(ctx lec.Context, user *entity.User) e.Error {
-	query, args := verifyQuery(user.Id, user.Verified)
-
-	tx, err := u.postgres.Begin(ctx)
-	if err != nil {
-		return e.InternalErr.
-			WithCtx(ctx).
-			WithErr(err)
-	}
-	defer tx.Rollback(ctx)
-
-	if _, err = tx.Exec(ctx, query, args...); err != nil {
-		return e.InternalErr.
-			WithCtx(ctx).
-			WithErr(err)
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		return e.InternalErr.
-			WithCtx(ctx).
-			WithErr(err)
-	}
-
-	err = u.redis.Del(ctx, redisKey(user.Id)).Err()
-	if err != nil {
-		return e.InternalErr.
-			WithCtx(ctx).
-			WithErr(err)
-	}
-
-	user, getErr := u.GetById(ctx, user.Id)
-	if getErr != nil {
-		return getErr.WithErr(err)
-	}
-
-	err = u.redis.Set(ctx, redisKey(user.Id), user, redisExpires).Err()
-	if err != nil {
-		return e.InternalErr.
-			WithCtx(ctx).
-			WithErr(err)
-	}
-
-	return nil
-}
-
-func (u *User) Delete(ctx lec.Context, user *entity.User) e.Error {
-	query, args := deleteQuery(user.Id)
+func (u *User) Delete(ctx lec.Context, id uint64) e.Error {
+	query, args := deleteQuery(id)
 
 	tx, err := u.postgres.Begin(ctx)
 	if err != nil {
@@ -231,7 +187,7 @@ func (u *User) Delete(ctx lec.Context, user *entity.User) e.Error {
 			WithErr(err)
 	}
 
-	err = u.redis.Del(ctx, redisKey(user.Id)).Err()
+	err = u.redis.Del(ctx, redisKey(id)).Err()
 	if err != nil {
 		return e.InternalErr.
 			WithCtx(ctx).

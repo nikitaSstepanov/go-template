@@ -9,5 +9,5 @@ const (
 )
 
 var (
-	lenErr = e.New("Bad string length", e.BadInput)
+	lenErr = e.New("Bad string length.", e.BadInput)
 )

@@ -5,14 +5,11 @@ import (
 	"app/internal/controller/http/v1/pkg/account"
 	"app/internal/controller/http/v1/pkg/auth"
 	"app/internal/usecase"
-	"app/pkg/swagger"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gosuit/gins"
 	"github.com/gosuit/httper"
 	"github.com/gosuit/lec"
-	swaggerfiles "github.com/swaggo/files"     // swagger embed files
-	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
 )
 
 type Router struct {
@@ -22,12 +19,12 @@ type Router struct {
 }
 
 type Config struct {
-	Swagger       swagger.SwaggerSpec `confy:"swagger"`
-	RefreshCookie httper.Cookie       `confy:"refresh_cookie"`
+	Swagger       SwaggerCfg    `confy:"swagger"`
+	RefreshCookie httper.Cookie `confy:"refresh_cookie"`
 }
 
 func New(uc *usecase.UseCase, cfg *Config) *Router {
-	swagger.SetSwaggerConfig(cfg.Swagger)
+	setSwaggerConfig(cfg.Swagger)
 
 	return &Router{
 		account: account.New(uc.User, &cfg.RefreshCookie),
@@ -71,15 +68,6 @@ func (r *Router) initAuthRoutes(h *gin.RouterGroup) *gin.RouterGroup {
 		router.POST("/login", r.auth.Login)
 		router.POST("/logout", r.auth.Logout)
 		router.GET("/refresh", r.auth.Refresh)
-	}
-
-	return router
-}
-
-func (r *Router) initSwaggerRoute(h *gin.RouterGroup) *gin.RouterGroup {
-	router := h.Group("swagger")
-	{
-		router.GET("/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	}
 
 	return router

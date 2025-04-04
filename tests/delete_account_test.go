@@ -47,7 +47,7 @@ func TestDeleteAccount(t *testing.T) {
 			TestName: "Success",
 			Token:    fmt.Sprintf("Bearer %s", token),
 			Password: user.Password,
-			Status:   http.StatusOK,
+			Status:   http.StatusNoContent,
 		},
 
 		//TODO: Add more test cases
@@ -65,8 +65,7 @@ func TestDeleteAccount(t *testing.T) {
 				}
 			} else {
 				e.DELETE("/delete").WithHeader("Authorization", tc.Token).
-					Expect().Status(tc.Status).JSON().Object().
-					ContainsKey("message")
+					Expect().Status(tc.Status)
 			}
 		})
 	}

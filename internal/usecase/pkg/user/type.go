@@ -25,8 +25,7 @@ type UserStorage interface {
 	GetByEmail(ctx lec.Context, email string) (*entity.User, e.Error)
 	Create(ctx lec.Context, user *entity.User) e.Error
 	Update(ctx lec.Context, user *entity.User) e.Error
-	Verify(ctx lec.Context, user *entity.User) e.Error
-	Delete(ctx lec.Context, user *entity.User) e.Error
+	Delete(ctx lec.Context, id uint64) e.Error
 }
 
 type CodeStorage interface {

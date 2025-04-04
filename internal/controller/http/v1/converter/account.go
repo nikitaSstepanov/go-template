@@ -3,6 +3,7 @@ package converter
 import (
 	"app/internal/controller/http/v1/dto"
 	"app/internal/entity"
+	"app/internal/entity/types"
 )
 
 func DtoUser(user *entity.User) *dto.Account {
@@ -30,5 +31,12 @@ func EntityUpdate(update dto.UpdateUser) *entity.User {
 		Name:     update.Name,
 		Password: update.Password,
 		Age:      update.Age,
+	}
+}
+
+func EntitySetRole(set dto.SetRole) *entity.User {
+	return &entity.User{
+		Id:   set.Id,
+		Role: types.Role(set.Role),
 	}
 }

@@ -32,7 +32,6 @@ func New(uc AuthUseCase, cookie *httper.Cookie) *Auth {
 // @Failure 400 {object} resp.JsonError "Incorrect data"
 // @Failure 401 {object} resp.JsonError "Incorrect email or password"
 // @Failure 404 {object} resp.JsonError "This user wasn't found."
-// @Failure 500 {object} resp.JsonError "Something going wrong..."
 // @Router /account/auth/login [post]
 func (a *Auth) Login(c *gin.Context) {
 	ctx := gins.GetCtx(c)
@@ -64,17 +63,16 @@ func (a *Auth) Login(c *gin.Context) {
 
 	result := conv.DtoToken(tokens)
 
-	c.JSON(ok, result)
+	c.JSON(httper.StatusOK, result)
 }
 
 // @Summary Log out a user
-// @Description Logs out a user by invalidating the session
+// @Description Logs out a user by delete the session
 // @Tags Auth
 // @Accept json
 // @Produce json
 // @Security Bearer
 // @Success 200 {object} resp.Message "Logout success."
-// @Failure 500 {object} resp.JsonError "Something going wrong..."
 // @Router  /account/auth/logout [post]
 func (a *Auth) Logout(c *gin.Context) {
 	c.SetCookie(
@@ -91,7 +89,6 @@ func (a *Auth) Logout(c *gin.Context) {
 // @Success 200 {object} dto.Token "Refresh token"
 // @Failure 401 {object} resp.JsonError "Token is invalid"
 // @Failure 404 {object} resp.JsonError "Your token wasn't found., This user wasn't found."
-// @Failure 500 {object} resp.JsonError "Something going wrong..."
 // @Router /account/auth/refresh [get]
 func (a *Auth) Refresh(c *gin.Context) {
 	ctx := gins.GetCtx(c)
@@ -115,5 +112,5 @@ func (a *Auth) Refresh(c *gin.Context) {
 
 	result := conv.DtoToken(tokens)
 
-	c.JSON(ok, result)
+	c.JSON(httper.StatusOK, result)
 }

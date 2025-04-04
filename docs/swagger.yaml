@@ -44,6 +44,19 @@ definitions:
     - email
     - password
     type: object
+  dto.SetRole:
+    properties:
+      role:
+        enum:
+        - USER
+        - ADMIN
+        type: string
+      user_id:
+        type: integer
+    required:
+    - role
+    - user_id
+    type: object
   dto.Token:
     properties:
       token:
@@ -60,7 +73,7 @@ definitions:
       name:
         minLength: 1
         type: string
-      oldPassword:
+      old_password:
         maxLength: 50
         minLength: 8
         type: string
@@ -68,6 +81,10 @@ definitions:
         maxLength: 50
         minLength: 8
         type: string
+    required:
+    - age
+    - email
+    - name
     type: object
   resp.JsonError:
     properties:
@@ -82,7 +99,7 @@ definitions:
 info:
   contact: {}
 paths:
-  /account/:
+  /account:
     get:
       consumes:
       - application/json
@@ -100,10 +117,6 @@ paths:
             $ref: '#/definitions/resp.JsonError'
         "404":
           description: This user wasn`t found.
-          schema:
-            $ref: '#/definitions/resp.JsonError'
-        "500":
-          description: Something going wrong...
           schema:
             $ref: '#/definitions/resp.JsonError'
       security:
@@ -142,10 +155,6 @@ paths:
           description: This user wasn't found.
           schema:
             $ref: '#/definitions/resp.JsonError'
-        "500":
-          description: Something going wrong...
-          schema:
-            $ref: '#/definitions/resp.JsonError'
       summary: Log in a user
       tags:
       - Auth
@@ -153,7 +162,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Logs out a user by invalidating the session
+      description: Logs out a user by delete the session
       produces:
       - application/json
       responses:
@@ -161,10 +170,6 @@ paths:
           description: Logout success.
           schema:
             $ref: '#/definitions/resp.Message'
-        "500":
-          description: Something going wrong...
-          schema:
-            $ref: '#/definitions/resp.JsonError'
       security:
       - Bearer: []
       summary: Log out a user
@@ -190,10 +195,6 @@ paths:
           description: Your token wasn't found., This user wasn't found.
           schema:
             $ref: '#/definitions/resp.JsonError'
-        "500":
-          description: Something going wrong...
-          schema:
-            $ref: '#/definitions/resp.JsonError'
       summary: Refresh user tokens
       tags:
       - Auth
@@ -201,7 +202,7 @@ paths:
     delete:
       consumes:
       - application/json
-      description: Deletes a user account by ID.
+      description: Deletes a user account.
       produces:
       - application/json
       responses:
@@ -209,20 +210,8 @@ paths:
           description: Ok.
           schema:
             $ref: '#/definitions/resp.Message'
-        "400":
-          description: Incorrect data
-          schema:
-            $ref: '#/definitions/resp.JsonError'
         "401":
           description: Authorization header wasn`t found, Token is not bearer
-          schema:
-            $ref: '#/definitions/resp.JsonError'
-        "403":
-          description: This resource is forbidden
-          schema:
-            $ref: '#/definitions/resp.JsonError'
-        "500":
-          description: Something going wrong...
           schema:
             $ref: '#/definitions/resp.JsonError'
       security:
@@ -234,14 +223,14 @@ paths:
     patch:
       consumes:
       - application/json
-      description: Updates the user's information including password.
+      description: Updates the user's role. Available only for ADMIN
       parameters:
-      - description: User update data
+      - description: User set role data
         in: body
         name: body
         required: true
         schema:
-          $ref: '#/definitions/dto.UpdateUser'
+          $ref: '#/definitions/dto.SetRole'
       produces:
       - application/json
       responses:
@@ -250,7 +239,7 @@ paths:
           schema:
             $ref: '#/definitions/resp.Message'
         "400":
-          description: Bad Request
+          description: Incorrect data.
           schema:
             $ref: '#/definitions/resp.JsonError'
         "401":
@@ -265,62 +254,16 @@ paths:
           description: This user wasn't found
           schema:
             $ref: '#/definitions/resp.JsonError'
-        "409":
-          description: User with this email already exists
-          schema:
-            $ref: '#/definitions/resp.JsonError'
-        "500":
-          description: Something going wrong...
-          schema:
-            $ref: '#/definitions/resp.JsonError'
       security:
       - Bearer: []
-      summary: Update user information
+      summary: Update user role
       tags:
       - Account
-  /account/new:
-    post:
+  /account/edit/verify/confirm/{code}:
+    patch:
       consumes:
       - application/json
-      description: Creates a new user and returns access tokens.
-      parameters:
-      - description: Data for creating a user
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/dto.CreateUser'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successful response with token
-          schema:
-            $ref: '#/definitions/dto.Token'
-        "400":
-          description: Incorrect data
-          schema:
-            $ref: '#/definitions/resp.JsonError'
-        "403":
-          description: Incorrect password
-          schema:
-            $ref: '#/definitions/resp.JsonError'
-        "409":
-          description: User with this email already exist
-          schema:
-            $ref: '#/definitions/resp.JsonError'
-        "500":
-          description: Something going wrong...
-          schema:
-            $ref: '#/definitions/resp.JsonError'
-      summary: Create User
-      tags:
-      - Account
-  /account/verify/confirm/{code}:
-    get:
-      consumes:
-      - application/json
-      description: Verifies the provided activation code for the user.
+      description: Verifies user with the provided activation code.
       parameters:
       - description: Activation Code
         in: path
@@ -352,16 +295,12 @@ paths:
           description: This code wasn`t found.
           schema:
             $ref: '#/definitions/resp.JsonError'
-        "500":
-          description: Something going wrong...
-          schema:
-            $ref: '#/definitions/resp.JsonError'
       security:
       - Bearer: []
-      summary: Verify user activation code
+      summary: Verify user
       tags:
       - Account
-  /account/verify/resend:
+  /account/edit/verify/resend:
     get:
       consumes:
       - application/json
@@ -389,13 +328,43 @@ paths:
           description: User not found
           schema:
             $ref: '#/definitions/resp.JsonError'
-        "500":
-          description: Something going wrong...
-          schema:
-            $ref: '#/definitions/resp.JsonError'
       security:
       - Bearer: []
       summary: Resend verification code
+      tags:
+      - Account
+  /account/new:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new account and returns access tokens.
+      parameters:
+      - description: Data for creating a user
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful response with token
+          schema:
+            $ref: '#/definitions/dto.Token'
+        "400":
+          description: Incorrect data
+          schema:
+            $ref: '#/definitions/resp.JsonError'
+        "403":
+          description: Incorrect password
+          schema:
+            $ref: '#/definitions/resp.JsonError'
+        "409":
+          description: User with this email already exist
+          schema:
+            $ref: '#/definitions/resp.JsonError'
+      summary: Create account
       tags:
       - Account
 securityDefinitions:

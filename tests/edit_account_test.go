@@ -89,12 +89,6 @@ func TestEditAccount(t *testing.T) {
 			Password:    gofakeit.Password(true, true, true, true, false, 10),
 			Status:      http.StatusOK,
 		},
-		{
-			TestName: "Empty fields",
-			Email:    genRandEmail(),
-			Token:    fmt.Sprintf("Bearer %s", token),
-			Status:   http.StatusOK,
-		},
 		//TODO: Add more test cases
 	}
 

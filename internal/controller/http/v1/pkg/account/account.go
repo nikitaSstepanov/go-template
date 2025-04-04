@@ -4,9 +4,9 @@ import (
 	conv "app/internal/controller/http/v1/converter"
 	"app/internal/controller/http/v1/dto"
 	"app/internal/controller/http/v1/validator"
-	"app/internal/entity"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gosuit/e"
 	"github.com/gosuit/gins"
 	"github.com/gosuit/httper"
 )
@@ -32,8 +32,7 @@ func New(uc UserUseCase, cookie *httper.Cookie) *Account {
 // @Success 200 {object} dto.Account "Successful response"
 // @Failure 401 {object} resp.JsonError "Authorization header wasn't found, Token is not bearer"
 // @Failure 404 {object} resp.JsonError "This user wasn`t found."
-// @Failure 500 {object} resp.JsonError "Something going wrong..."
-// @Router /account/ [get]
+// @Router /account [get]
 func (a *Account) Get(c *gin.Context) {
 	ctx := gins.GetCtx(c)
 	userId := c.GetUint64("userId")
@@ -46,11 +45,11 @@ func (a *Account) Get(c *gin.Context) {
 
 	result := conv.DtoUser(user)
 
-	c.JSON(ok, result)
+	c.JSON(httper.StatusOK, result)
 }
 
-// @Summary Create User
-// @Description Creates a new user and returns access tokens.
+// @Summary Create account
+// @Description Creates a new account and returns access tokens.
 // @Tags Account
 // @Accept json
 // @Produce json
@@ -59,7 +58,6 @@ func (a *Account) Get(c *gin.Context) {
 // @Failure 400 {object} resp.JsonError "Incorrect data"
 // @Failure 403 {object} resp.JsonError "Incorrect password"
 // @Failure 409 {object} resp.JsonError "User with this email already exist"
-// @Failure 500 {object} resp.JsonError "Something going wrong..."
 // @Router /account/new [post]
 func (a *Account) Create(c *gin.Context) {
 	ctx := gins.GetCtx(c)
@@ -90,7 +88,7 @@ func (a *Account) Create(c *gin.Context) {
 
 	result := conv.DtoToken(tokens)
 
-	c.JSON(ok, result)
+	c.JSON(httper.StatusOK, result)
 }
 
 // @Summary Update user information
@@ -101,13 +99,11 @@ func (a *Account) Create(c *gin.Context) {
 // @Param body body dto.UpdateUser true "User update data"
 // @Security Bearer
 // @Success 200 {object} resp.Message "Updated."
-// @Failure 400 {object} resp.JsonError "Incorrect data., Your activation code is wrong."
-// @Failure 400 {object} resp.JsonError
+// @Failure 400 {object} resp.JsonError "Incorrect data."
 // @Failure 401 {object} resp.JsonError "Authorization header wasn't found, Token is not bearer"
 // @Failure 403 {object} resp.JsonError "This resource is forbidden"
 // @Failure 404 {object} resp.JsonError "This user wasn't found"
 // @Failure 409 {object} resp.JsonError "User with this email already exists"
-// @Failure 500 {object} resp.JsonError "Something going wrong..."
 // @Router /account/edit [patch]
 func (a *Account) Update(c *gin.Context) {
 	ctx := gins.GetCtx(c)
@@ -134,11 +130,50 @@ func (a *Account) Update(c *gin.Context) {
 		return
 	}
 
-	c.JSON(ok, updatedMsg)
+	c.JSON(httper.StatusOK, updatedMsg)
 }
 
-// @Summary Verify user activation code
-// @Description Verifies the provided activation code for the user.
+// @Summary Update user role
+// @Description Updates the user's role. Available only for ADMIN
+// @Tags Account
+// @Accept json
+// @Produce json
+// @Param body body dto.SetRole true "User set role data"
+// @Security Bearer
+// @Success 200 {object} resp.Message "Updated."
+// @Failure 400 {object} resp.JsonError "Incorrect data."
+// @Failure 401 {object} resp.JsonError "Authorization header wasn't found, Token is not bearer"
+// @Failure 403 {object} resp.JsonError "This resource is forbidden"
+// @Failure 404 {object} resp.JsonError "This user wasn't found"
+// @Router /account/edit [patch]
+func (a *Account) SetRole(c *gin.Context) {
+	ctx := gins.GetCtx(c)
+
+	var body dto.SetRole
+
+	if err := c.ShouldBindJSON(&body); err != nil {
+		gins.Abort(c, e.BadInputErr.WithErr(err))
+		return
+	}
+
+	if err := validator.Struct(body); err != nil {
+		gins.Abort(c, err)
+		return
+	}
+
+	user := conv.EntitySetRole(body)
+
+	err := a.usecase.SetRole(ctx, user)
+	if err != nil {
+		gins.Abort(c, err)
+		return
+	}
+
+	c.JSON(httper.StatusOK, updatedMsg)
+}
+
+// @Summary Verify user
+// @Description Verifies user with the provided activation code.
 // @Tags Account
 // @Accept json
 // @Produce json
@@ -149,8 +184,7 @@ func (a *Account) Update(c *gin.Context) {
 // @Failure 401 {object} resp.JsonError "Authorization header wasn`t found, Token is not bearer"
 // @Failure 403 {object} resp.JsonError "This resource is forbidden"
 // @Failure 404 {object} resp.JsonError "This code wasn`t found."
-// @Failure 500 {object} resp.JsonError "Something going wrong..."
-// @Router /account/verify/confirm/{code} [get]
+// @Router /account/edit/verify/confirm/{code} [patch]
 func (a *Account) Verify(c *gin.Context) {
 	ctx := gins.GetCtx(c)
 	userId := c.GetUint64("userId")
@@ -168,7 +202,7 @@ func (a *Account) Verify(c *gin.Context) {
 		return
 	}
 
-	c.JSON(ok, verifiedMsg)
+	c.JSON(httper.StatusOK, verifiedMsg)
 }
 
 // @Summary Resend verification code
@@ -182,8 +216,7 @@ func (a *Account) Verify(c *gin.Context) {
 // @Failure 401 {object} resp.JsonError `"This resource is forbidden, Authorization header wasn`t found, Token is not bearer"`
 // @Failure 403 {object} resp.JsonError "This resource is forbidden"
 // @Failure 404 {object} resp.JsonError "User not found"
-// @Failure 500 {object} resp.JsonError "Something going wrong..."
-// @Router /account/verify/resend [get]
+// @Router /account/edit/verify/resend [get]
 func (a *Account) ResendCode(c *gin.Context) {
 	ctx := gins.GetCtx(c)
 	userId := c.GetUint64("userId")
@@ -194,35 +227,28 @@ func (a *Account) ResendCode(c *gin.Context) {
 		return
 	}
 
-	c.JSON(ok, okMsg)
+	c.JSON(httper.StatusOK, okMsg)
 }
 
 // @Summary Delete user account
-// @Description Deletes a user account by ID.
+// @Description Deletes a user account.
 // @Tags Account
 // @Accept json
 // @Produce json
 // @Security Bearer
 // @Success 200 {object} resp.Message "Ok."
-// @Failure 400 {object} resp.JsonError "Incorrect data"
 // @Failure 401 {object} resp.JsonError "Authorization header wasn`t found, Token is not bearer"
-// @Failure 403 {object} resp.JsonError "This resource is forbidden"
-// @Failure 500 {object} resp.JsonError "Something going wrong..."
 // @Router /account/delete [delete]
 func (a *Account) Delete(c *gin.Context) {
 	ctx := gins.GetCtx(c)
 
 	userId := c.GetUint64("userId")
 
-	user := &entity.User{
-		Id: userId,
-	}
-
-	err := a.usecase.Delete(ctx, user)
+	err := a.usecase.Delete(ctx, userId)
 	if err != nil {
 		gins.Abort(c, err)
 		return
 	}
 
-	c.JSON(ok, okMsg)
+	c.JSON(httper.StatusNoContent, okMsg)
 }

@@ -13,5 +13,5 @@ const (
 
 var (
 	badDataErr = e.New("Incorrect email or password.", e.Unauthorize)
-	unauthErr  = e.New("Token is invalid.", e.Unauthorize)
+	
 )

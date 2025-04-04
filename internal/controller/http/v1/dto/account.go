@@ -16,9 +16,14 @@ type CreateUser struct {
 }
 
 type UpdateUser struct {
-	Email       string `json:"email"       validate:"omitempty,email"`
-	Name        string `json:"name"        validate:"omitempty,min=1"`
-	Password    string `json:"password"    validate:"omitempty,min=8,max=50,password"`
-	OldPassword string `json:"oldPassword" validate:"omitempty,min=8,max=50,password"`
-	Age         int    `json:"age"         validate:"omitempty,gte=0,lte=200"`
+	Email       string `json:"email"        validate:"required,email"`
+	Name        string `json:"name"         validate:"required,min=1"`
+	Password    string `json:"password"     validate:"omitempty,min=8,max=50,password"`
+	OldPassword string `json:"old_password" validate:"omitempty,min=8,max=50,password"`
+	Age         int    `json:"age"          validate:"required,gte=0,lte=200"`
+}
+
+type SetRole struct {
+	Id   uint64 `json:"user_id" validate:"required"`
+	Role string `json:"role"    validate:"required,oneof=USER ADMIN"`
 }

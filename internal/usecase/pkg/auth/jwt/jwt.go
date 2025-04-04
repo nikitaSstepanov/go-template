@@ -1,4 +1,4 @@
-package auth
+package jwt
 
 import (
 	"app/internal/entity"
@@ -15,7 +15,7 @@ type Jwt struct {
 	refreshKey string
 }
 
-func NewJwt(options *JwtOptions) *Jwt {
+func New(options *JwtOptions) *Jwt {
 	return &Jwt{
 		audience:   options.Audience,
 		issuer:     options.Issuer,
@@ -46,6 +46,7 @@ func (j *Jwt) ValidateToken(jwtString string, isRefresh bool) (*Claims, e.Error)
 func (j *Jwt) GenerateToken(user *entity.User, expires time.Duration, isRefresh bool) (string, e.Error) {
 	c := Claims{
 		user.Id,
+		user.Role,
 		jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(expires)),
 			Issuer:    j.issuer,
