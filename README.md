@@ -1,56 +1,40 @@
 # GO TEMPLATE
 
-This is a template for building applications in Go using the Clean Architecture principles. The project is designed to be a starting point for your next Go application, ensuring that your codebase is maintainable, scalable, and testable.
 
-This project leverages <a href="https://github.com/gosuit">GoSuit</a> for rapid development and enhanced productivity.
+This is a template for building applications in Go using the clean architecture principles. The project is designed to be an example of modern and high-quality app. It can be starting point for your next Go application, ensuring that your codebase is maintainable and scalable.
+
+The template contains the functionality of working with the profile and authorization
+
+This project uses <a href="https://github.com/gosuit">GoSuit</a> for flexible and concise development.
 
 ## Getting Started
 
-▎Prerequisites
+### Run
+You can run app local:
 
-• Go 1.17 or higher
+```zsh
+make run
+``` 
 
-• Git
+Or in docker:
 
-▎Clone the Repository
+```zsh
+make docker
+```
 
-git clone https://github.com/yourusername/GoCleanArchitectureTemplate.git
-cd GoCleanArchitectureTemplate
-▎Install Dependencies
+### Test
 
-Make sure to install the required dependencies using Go Modules:
+You can run unit test with:
 
-go mod tidy
-▎Build the Application
+```zsh
+make unit-test
+```
 
-To build the application, run:
+And e2e tests (./tests directory):
 
-go build -o myapp ./cmd/myapp
-▎Run the Application
-
-You can run the application using:
-
-./myapp
-By default, the application will start on port 8080. You can change the port by setting the PORT environment variable.
-
-▎Running Tests
-
-To run the tests, simply execute:
-
-go test ./...
-▎Project Structure
-
-The project is organized into several key directories:
-
-• cmd/: Contains the entry point for the application.
-
-• internal/: Contains the core business logic and domain models.
-
-• pkg/: Contains shared libraries and utilities.
-
-• configs/: Configuration files.
-
-• migrations/: Database migrations.
+```zsh
+make e2e-test
+```
 
 ## Contributing
 
