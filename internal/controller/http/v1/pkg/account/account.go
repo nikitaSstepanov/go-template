@@ -104,7 +104,7 @@ func (a *Account) Create(c *gin.Context) {
 // @Failure 403 {object} resp.JsonError "This resource is forbidden"
 // @Failure 404 {object} resp.JsonError "This user wasn't found"
 // @Failure 409 {object} resp.JsonError "User with this email already exists"
-// @Router /account/edit [patch]
+// @Router /account/edit [put]
 func (a *Account) Update(c *gin.Context) {
 	ctx := gins.GetCtx(c)
 	userId := c.GetUint64("userId")
@@ -145,7 +145,7 @@ func (a *Account) Update(c *gin.Context) {
 // @Failure 401 {object} resp.JsonError "Authorization header wasn't found, Token is not bearer"
 // @Failure 403 {object} resp.JsonError "This resource is forbidden"
 // @Failure 404 {object} resp.JsonError "This user wasn't found"
-// @Router /account/edit [patch]
+// @Router /account/edit/role [patch]
 func (a *Account) SetRole(c *gin.Context) {
 	ctx := gins.GetCtx(c)
 
@@ -184,7 +184,7 @@ func (a *Account) SetRole(c *gin.Context) {
 // @Failure 401 {object} resp.JsonError "Authorization header wasn`t found, Token is not bearer"
 // @Failure 403 {object} resp.JsonError "This resource is forbidden"
 // @Failure 404 {object} resp.JsonError "This code wasn`t found."
-// @Router /account/edit/verify/confirm/{code} [patch]
+// @Router /account/verify/confirm/{code} [post]
 func (a *Account) Verify(c *gin.Context) {
 	ctx := gins.GetCtx(c)
 	userId := c.GetUint64("userId")
@@ -216,7 +216,7 @@ func (a *Account) Verify(c *gin.Context) {
 // @Failure 401 {object} resp.JsonError `"This resource is forbidden, Authorization header wasn`t found, Token is not bearer"`
 // @Failure 403 {object} resp.JsonError "This resource is forbidden"
 // @Failure 404 {object} resp.JsonError "User not found"
-// @Router /account/edit/verify/resend [get]
+// @Router /account/verify/resend [get]
 func (a *Account) ResendCode(c *gin.Context) {
 	ctx := gins.GetCtx(c)
 	userId := c.GetUint64("userId")

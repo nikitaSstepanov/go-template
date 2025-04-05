@@ -13,15 +13,7 @@ import (
 	"github.com/gosuit/sl"
 )
 
-type App struct {
-	controller *controller.Controller
-	usecase    *usecase.UseCase
-	storage    *storage.Storage
-	server     *httper.Server
-	ctx        lec.Context
-}
-
-func New() *App {
+func Run() {
 	cfg, err := getConfig()
 	if err != nil {
 		panic(fmt.Sprintf("Can`t get app config. Error: %v", err))
@@ -31,42 +23,27 @@ func New() *App {
 
 	ctx := lec.New(log)
 
-	app := &App{}
+	storage := storage.New(ctx, &cfg.Storage)
 
-	app.ctx = ctx
+	usecase := usecase.New(storage, &cfg.UseCase)
 
-	app.storage = storage.New(ctx, &cfg.Storage)
+	controller := controller.New(usecase, &cfg.Controller)
 
-	app.usecase = usecase.New(app.storage, &cfg.UseCase)
+	handler := controller.InitRoutes(ctx)
 
-	app.controller = controller.New(app.usecase, &cfg.Controller)
+	server := httper.NewServer(&cfg.Server, handler)
 
-	handler := app.controller.InitRoutes(ctx)
+	server.Start()
 
-	app.server = httper.NewServer(&cfg.Server, handler)
+	log.Info("Application started successfully")
 
-	return app
-}
-
-func (a *App) Run() {
-	log := a.ctx.Logger()
-
-	a.server.Start()
-
-	a.shutdown()
-
-	log.Info("Application stopped successfully")
-}
-
-func (a *App) shutdown() {
-	log := a.ctx.Logger()
-
-	err := e.E(a.server.Shutdown(log.ToSlog()))
-	if err != nil {
+	if err := e.E(server.Shutdown(log.ToSlog())); err != nil {
 		log.Fatal("Failed to stop http server", err.SlErr())
 	}
 
-	if err := a.storage.Close(); err != nil {
+	if err := storage.Close(); err != nil {
 		log.Fatal("Failed to close storage", err.SlErr())
 	}
+
+	log.Info("Application stopped successfully")
 }

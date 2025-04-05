@@ -94,7 +94,7 @@ func TestEditAccount(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.TestName, func(t *testing.T) {
-			obj := e.PATCH("/edit").WithHeader("Authorization", tc.Token).WithJSON(dto.UpdateUser{
+			obj := e.PUT("/edit").WithHeader("Authorization", tc.Token).WithJSON(dto.UpdateUser{
 				Email:       tc.Email,
 				Name:        tc.Name,
 				Age:         tc.Age,

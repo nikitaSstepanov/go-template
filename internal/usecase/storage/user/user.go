@@ -3,7 +3,6 @@ package user
 import (
 	"app/internal/entity"
 	"app/internal/entity/types"
-	"fmt"
 
 	"github.com/gosuit/e"
 	"github.com/gosuit/lec"
@@ -123,9 +122,7 @@ func (u *User) Create(ctx lec.Context, user *entity.User) e.Error {
 
 func (u *User) Update(ctx lec.Context, user *entity.User) e.Error {
 	query, args := updateQuery(user)
-	fmt.Println(query)
-	fmt.Println(args...)
-	fmt.Println(user)
+
 	tx, err := u.postgres.Begin(ctx)
 	if err != nil {
 		return e.InternalErr.

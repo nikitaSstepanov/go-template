@@ -13,5 +13,4 @@ const (
 
 var (
 	badDataErr = e.New("Incorrect email or password.", e.Unauthorize)
-	
 )

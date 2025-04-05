@@ -19,7 +19,7 @@ func Struct(s any, args ...Arg) e.Error {
 		for _, err := range errors {
 			switch err.Tag() {
 			case "required":
-				msg += "Field" + err.Field() + "is required. "
+				msg += "Field " + err.Field() + " is required. "
 			case "email":
 				msg += "Invalid email. "
 			case "min":
@@ -28,10 +28,6 @@ func Struct(s any, args ...Arg) e.Error {
 				msg += "Max length of " + err.Field() + " is " + err.Param() + ". "
 			case "password":
 				msg += "Password must include latin letters in upper and lower case, numbers and special symbols. "
-			case "age":
-				msg += "Minimal avaliable age is 8. "
-			case "fields":
-				msg += "Invalid fields. "
 			}
 		}
 

@@ -4,6 +4,7 @@ import (
 	"app/internal/controller/http/v1/middleware"
 	"app/internal/controller/http/v1/pkg/account"
 	"app/internal/controller/http/v1/pkg/auth"
+	"app/internal/entity/types"
 	"app/internal/usecase"
 
 	"github.com/gin-gonic/gin"
@@ -50,7 +51,8 @@ func (r *Router) InitRoutes(c lec.Context, h *gin.RouterGroup) *gin.RouterGroup 
 func (r *Router) initAccountRoutes(h *gin.RouterGroup) *gin.RouterGroup {
 	router := h.Group("/account")
 	{
-		router.PATCH("/edit", r.mid.CheckAccess(), r.account.Update)
+		router.PUT("/edit", r.mid.CheckAccess(), r.account.Update)
+		router.PATCH("/edit/role", r.mid.CheckAccess(types.ADMIN), r.account.SetRole)
 		router.POST("/new", r.account.Create)
 		router.GET("/verify/confirm/:code", r.mid.CheckAccess(), r.account.Verify)
 		router.GET("/verify/resend", r.mid.CheckAccess(), r.account.ResendCode)

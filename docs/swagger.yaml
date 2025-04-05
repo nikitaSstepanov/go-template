@@ -220,6 +220,50 @@ paths:
       tags:
       - Account
   /account/edit:
+    put:
+      consumes:
+      - application/json
+      description: Updates the user's information including password.
+      parameters:
+      - description: User update data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated.
+          schema:
+            $ref: '#/definitions/resp.Message'
+        "400":
+          description: Incorrect data.
+          schema:
+            $ref: '#/definitions/resp.JsonError'
+        "401":
+          description: Authorization header wasn't found, Token is not bearer
+          schema:
+            $ref: '#/definitions/resp.JsonError'
+        "403":
+          description: This resource is forbidden
+          schema:
+            $ref: '#/definitions/resp.JsonError'
+        "404":
+          description: This user wasn't found
+          schema:
+            $ref: '#/definitions/resp.JsonError'
+        "409":
+          description: User with this email already exists
+          schema:
+            $ref: '#/definitions/resp.JsonError'
+      security:
+      - Bearer: []
+      summary: Update user information
+      tags:
+      - Account
+  /account/edit/role:
     patch:
       consumes:
       - application/json
@@ -259,8 +303,42 @@ paths:
       summary: Update user role
       tags:
       - Account
-  /account/edit/verify/confirm/{code}:
-    patch:
+  /account/new:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new account and returns access tokens.
+      parameters:
+      - description: Data for creating a user
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful response with token
+          schema:
+            $ref: '#/definitions/dto.Token'
+        "400":
+          description: Incorrect data
+          schema:
+            $ref: '#/definitions/resp.JsonError'
+        "403":
+          description: Incorrect password
+          schema:
+            $ref: '#/definitions/resp.JsonError'
+        "409":
+          description: User with this email already exist
+          schema:
+            $ref: '#/definitions/resp.JsonError'
+      summary: Create account
+      tags:
+      - Account
+  /account/verify/confirm/{code}:
+    post:
       consumes:
       - application/json
       description: Verifies user with the provided activation code.
@@ -300,7 +378,7 @@ paths:
       summary: Verify user
       tags:
       - Account
-  /account/edit/verify/resend:
+  /account/verify/resend:
     get:
       consumes:
       - application/json
@@ -331,40 +409,6 @@ paths:
       security:
       - Bearer: []
       summary: Resend verification code
-      tags:
-      - Account
-  /account/new:
-    post:
-      consumes:
-      - application/json
-      description: Creates a new account and returns access tokens.
-      parameters:
-      - description: Data for creating a user
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/dto.CreateUser'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successful response with token
-          schema:
-            $ref: '#/definitions/dto.Token'
-        "400":
-          description: Incorrect data
-          schema:
-            $ref: '#/definitions/resp.JsonError'
-        "403":
-          description: Incorrect password
-          schema:
-            $ref: '#/definitions/resp.JsonError'
-        "409":
-          description: User with this email already exist
-          schema:
-            $ref: '#/definitions/resp.JsonError'
-      summary: Create account
       tags:
       - Account
 securityDefinitions:

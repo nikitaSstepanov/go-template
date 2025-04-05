@@ -47,7 +47,7 @@ services:
       JWT_ACCESS_SECRET: "root"
       JWT_REFRESH_SECRET: "root"
       CODER_ENCRYPT_SECRET: "cc4e4b76a835c147"
-      MAIL_PASSWORD: "mQsyZcwTNGznzF7gBFwg"
+      MAIL_PASSWORD: "root"
     depends_on:
       postgres:
         condition: service_healthy

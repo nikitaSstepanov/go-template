@@ -37,7 +37,7 @@ func TestGet(t *testing.T) {
 			Code:  "000000",
 			Id:    0,
 			IsErr: true,
-			Err:   e.New("", e.NotFound),
+			Err:   e.New("Not found", e.NotFound),
 		},
 
 		// TODO: Add more test cases

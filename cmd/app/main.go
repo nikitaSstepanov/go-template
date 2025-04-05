@@ -6,7 +6,7 @@ import "app/internal/app"
 // @in header
 // @name Authorization
 func main() {
-	a := app.New()
 
-	a.Run()
+	app.Run()
+
 }

@@ -80,7 +80,7 @@ func TestLogin(t *testing.T) {
 			},
 		},
 		{
-			TestName: "Successful",
+			TestName: "Not found",
 			User: &entity.User{
 				Email: "test",
 			},

@@ -205,6 +205,75 @@ const docTemplate = `{
             }
         },
         "/account/edit": {
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Updates the user's information including password.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Update user information",
+                "parameters": [
+                    {
+                        "description": "User update data",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateUser"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Updated.",
+                        "schema": {
+                            "$ref": "#/definitions/resp.Message"
+                        }
+                    },
+                    "400": {
+                        "description": "Incorrect data.",
+                        "schema": {
+                            "$ref": "#/definitions/resp.JsonError"
+                        }
+                    },
+                    "401": {
+                        "description": "Authorization header wasn't found, Token is not bearer",
+                        "schema": {
+                            "$ref": "#/definitions/resp.JsonError"
+                        }
+                    },
+                    "403": {
+                        "description": "This resource is forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/resp.JsonError"
+                        }
+                    },
+                    "404": {
+                        "description": "This user wasn't found",
+                        "schema": {
+                            "$ref": "#/definitions/resp.JsonError"
+                        }
+                    },
+                    "409": {
+                        "description": "User with this email already exists",
+                        "schema": {
+                            "$ref": "#/definitions/resp.JsonError"
+                        }
+                    }
+                }
+            }
+        },
+        "/account/edit/role": {
             "patch": {
                 "security": [
                     {
@@ -267,8 +336,60 @@ const docTemplate = `{
                 }
             }
         },
-        "/account/edit/verify/confirm/{code}": {
-            "patch": {
+        "/account/new": {
+            "post": {
+                "description": "Creates a new account and returns access tokens.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Create account",
+                "parameters": [
+                    {
+                        "description": "Data for creating a user",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateUser"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response with token",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Token"
+                        }
+                    },
+                    "400": {
+                        "description": "Incorrect data",
+                        "schema": {
+                            "$ref": "#/definitions/resp.JsonError"
+                        }
+                    },
+                    "403": {
+                        "description": "Incorrect password",
+                        "schema": {
+                            "$ref": "#/definitions/resp.JsonError"
+                        }
+                    },
+                    "409": {
+                        "description": "User with this email already exist",
+                        "schema": {
+                            "$ref": "#/definitions/resp.JsonError"
+                        }
+                    }
+                }
+            }
+        },
+        "/account/verify/confirm/{code}": {
+            "post": {
                 "security": [
                     {
                         "Bearer": []
@@ -330,7 +451,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/account/edit/verify/resend": {
+        "/account/verify/resend": {
             "get": {
                 "security": [
                     {
@@ -375,58 +496,6 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "User not found",
-                        "schema": {
-                            "$ref": "#/definitions/resp.JsonError"
-                        }
-                    }
-                }
-            }
-        },
-        "/account/new": {
-            "post": {
-                "description": "Creates a new account and returns access tokens.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Account"
-                ],
-                "summary": "Create account",
-                "parameters": [
-                    {
-                        "description": "Data for creating a user",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.CreateUser"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful response with token",
-                        "schema": {
-                            "$ref": "#/definitions/dto.Token"
-                        }
-                    },
-                    "400": {
-                        "description": "Incorrect data",
-                        "schema": {
-                            "$ref": "#/definitions/resp.JsonError"
-                        }
-                    },
-                    "403": {
-                        "description": "Incorrect password",
-                        "schema": {
-                            "$ref": "#/definitions/resp.JsonError"
-                        }
-                    },
-                    "409": {
-                        "description": "User with this email already exist",
                         "schema": {
                             "$ref": "#/definitions/resp.JsonError"
                         }

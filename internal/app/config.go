@@ -13,7 +13,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-type Config struct {
+type appConfig struct {
 	Controller controller.Config `confy:"controller"`
 	UseCase    usecase.Config    `confy:"usecase"`
 	Storage    storage.Config    `confy:"storage"`
@@ -21,8 +21,8 @@ type Config struct {
 	Logger     sl.Config         `confy:"logger"`
 }
 
-func getConfig() (*Config, error) {
-	env := os.Getenv("ENVIRONMENT")
+func getConfig() (*appConfig, error) {
+	env := getEnv()
 
 	if env == "LOCAL" {
 		if err := godotenv.Load(".env"); err != nil {
@@ -32,13 +32,23 @@ func getConfig() (*Config, error) {
 
 	path := getConfigPath(env)
 
-	var cfg Config
+	var cfg appConfig
 
 	if err := confy.Get(path, &cfg); err != nil {
 		return nil, err
 	}
 
 	return &cfg, nil
+}
+
+func getEnv() string {
+	env, ok := os.LookupEnv("ENVIRONMENT")
+
+	if !ok {
+		return "LOCAL"
+	}
+
+	return env
 }
 
 func getConfigPath(env string) string {

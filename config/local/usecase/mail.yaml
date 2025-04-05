@@ -1,6 +1,6 @@
 usecase:
   mail:
-    host:     "smtp.mail.ru"
-    port:     587
-    username: "intelligentmen@inbox.ru"
+    host:     ""
+    port:     0
+    username: ""
     identity: ""

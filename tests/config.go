@@ -46,7 +46,7 @@ type Server struct {
 func getConfigPath() string {
 	path := os.Getenv("CONFIG_PATH_TEST")
 	if path == "" {
-		path, _ = filepath.Abs("../config/test/test.yaml")
+		path, _ = filepath.Abs("../config/test/config.yaml")
 		return path
 	}
 	return path
