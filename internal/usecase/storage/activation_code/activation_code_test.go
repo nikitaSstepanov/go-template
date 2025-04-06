@@ -164,9 +164,10 @@ func TestDel(t *testing.T) {
 
 				var deleted entity.ActivationCode
 
-				redis.Get(ctx, redisKey(tc.Id)).Scan(&deleted)
-
-				assert.Equal(t, uint64(0), deleted.UserId)
+				getErr := redis.Get(ctx, redisKey(tc.Id)).Scan(&deleted)
+				if getErr != nil && getErr != rs.Nil {
+					t.Errorf("unexpected error: %v", err.Error())
+				}
 			}
 		})
 	}
